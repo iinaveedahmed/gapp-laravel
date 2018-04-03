@@ -10,6 +10,7 @@ This package includes
 	* To report  exception with Log-info context
 	* To render exception according to _iPaaS_ set standards
 * Other helpers
+  * Response helper
   * Request modifiers
   * Request helper
   * Generator
@@ -79,7 +80,7 @@ function validateUser(Request $request){
 		->key($user->key);  // client key to context
 		
 		// add request details context
-		ipaas()->type('Validate user name');
+		iLog()->type('Validate user name');
 
 		// Calling other class to resolve request
 		return ClassB::validateUserName($user);
@@ -157,8 +158,46 @@ function validateMetaData(MetaData $metaData){
 }
 ```
 ## Other Helpers
+### Response
+> Response helper `iresponse`
+or
+> Response decorator controller
+`[YOUR CONTROLLER] extends Ipaas/Response.php` 
+
+**Set Meta**
+Chain-able function to set response meta data
+```php
+return $this->meta(['client-id'=>'unknown'])->sendResponse($data);
+```
+
+**Set header**
+Chain-able function to set response header data
+```php
+return $this->header(['content-type'=>'application/json'])->sendResponse($data);
+```
+
+**AllErrors** 
+* `errorValidation()`
+* `errorUnauthorized()`
+* `errorBadRequest()`
+* `errorTooManyRequest()`
+* `errorNotFound()`
+* `errorNotImplemented()`
+* `errorInternalServer()`
+* Main: `sendError()`
+
+
 ### Request
-> Ipaas/Helper/Request.php
+> Request helper `irequest()`  
+`code/app/Ipaas/Ipaas.php`
+
+all given function are chain-able when extend method is used
+```php
+        $request = irequest()
+            ->boolify('EnablePaymentsToAccount')
+            ->arrify('Type')
+            ->validate($rules);
+``` 
 
 **Validate**
 Validate request based on given rules set.
