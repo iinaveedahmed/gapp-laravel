@@ -1,9 +1,13 @@
 <?php
-namespace App\Ipaas;
+namespace Ipaas\Logger;
 
 use Google\Cloud\Logging\LoggingClient;
 use Monolog\Logger;
 
+/**
+ * Class GLogger
+ * @package Ipaas\Logger
+ */
 class GLogger
 {
     public function __invoke(array $config)

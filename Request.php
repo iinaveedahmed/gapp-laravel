@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Ipaas;
+namespace Ipaas;
 
 use Illuminate\Support\Facades\Validator;
+use Ipaas\Exception\ValidationException;
 
 /**
  * Class Request
- * @package App\Ipaas
+ * @package Ipaas
  */
 class Request
 {

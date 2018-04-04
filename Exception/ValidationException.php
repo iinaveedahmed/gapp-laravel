@@ -1,5 +1,5 @@
 <?php
-namespace App\Ipaas;
+namespace Ipaas\Exception;
 
 use Exception;
 use Illuminate\Validation\Validator;

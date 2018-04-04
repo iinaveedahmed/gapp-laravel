@@ -1,10 +1,14 @@
 <?php
-namespace App\Ipaas\Info;
+namespace Ipaas\Logger;
 
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Str;
 
+/**
+ * Class Client
+ * @package Ipaas\Logger
+ */
 class Client extends Base
 {
     /**

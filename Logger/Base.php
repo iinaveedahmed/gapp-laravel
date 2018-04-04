@@ -1,9 +1,13 @@
 <?php
-namespace App\Ipaas\Info;
+namespace Ipaas\Logger;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
+/**
+ * Class Base
+ * @package Ipaas\Logger
+ */
 class Base
 {
     public $dataSet = [];

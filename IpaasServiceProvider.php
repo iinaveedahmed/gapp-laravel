@@ -1,24 +1,26 @@
 <?php
 
-namespace App\Ipaas;
+namespace Ipaas;
 
-use App\Ipaas\AuthAndLog;
-use App\Ipaas\Info\Client;
+use Ipaas\Exception\GException;
+use Ipaas\Exception\ValidationException;
+use Dingo\Api\Exception\RateLimitExceededException;
+use Google\Cloud\Core\Exception\BadRequestException;
+use Google\Cloud\Core\Exception\NotFoundException;
+use Illuminate\Validation\UnauthorizedException;
+use Ipaas\Middleware\AuthAndLog;
+use Ipaas\Logger\Client;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use XeroPHP\Remote\Exception\BadRequestException;
-use XeroPHP\Remote\Exception\InternalErrorException;
 use XeroPHP\Remote\Exception\NotAvailableException;
-use XeroPHP\Remote\Exception\NotFoundException;
 use XeroPHP\Remote\Exception\NotImplementedException;
 use XeroPHP\Remote\Exception\OrganisationOfflineException;
-use XeroPHP\Remote\Exception\RateLimitExceededException;
-use XeroPHP\Remote\Exception\UnauthorizedException;
 
-class Ipaas extends ServiceProvider
+class IpaasServiceProvider extends ServiceProvider
 {
 
     /**

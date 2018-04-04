@@ -1,11 +1,18 @@
 <?php
 
-namespace App\Ipaas;
+namespace Ipaas\Middleware;
 
 use Carbon\Carbon;
 use Closure;
 use Illuminate\Validation\UnauthorizedException;
 
+/**
+ * Middleware AuthAndLog
+ * This will provide ability to verify IPAAS header params and initiate basic log context.
+ * header check: x-api-key, X-Appengine, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
+ * log context: type, request->client, request->uuid, request->dateFrom, request->dateTo and auth header for client key.
+ * @package Ipaas
+ */
 class AuthAndLog
 {
     /**
@@ -26,23 +33,24 @@ class AuthAndLog
 
         // todo lock on app engine
         if (config('app.env') == 'production' && !$request->header('X-Appengine-Inbound-Appid')) {
+            ilog()->type('default');
             //throw new UnauthorizedException("Only accepts request from app engine");
         }
 
         // todo lock on cron
         if (config('app.env') == 'production' && !$request->header('X-AppEngine-Cron')) {
+            ilog()->type('corn');
             //throw new UnauthorizedException("Only accepts request from app engine");
         }
 
         // log information
         ilog()
             ->client($request->client ?: 'Unknown')
-            ->uuid($request->id ?: null)
+            ->uuid($request->uuid ?: null)
             ->key($request->header('Authorization') ?: 'TEST')
             ->dateFrom($request->dateFrom ?: Carbon::now())
             ->dateTo($request->dateTo ?: Carbon::now());
 
         return $next($request);
-        //UnauthorizedException();
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Ipaas;
+namespace Ipaas;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Response as LResponse;
@@ -72,6 +72,7 @@ class Response extends Controller
      * Set header data
      *
      * @param array $headers
+     * @return Response
      */
     public function setHeaders($headers = [])
     {
@@ -122,6 +123,7 @@ class Response extends Controller
      * Set metadata
      *
      * @param array $meta
+     * @return Response
      */
     public function setMeta(array $meta)
     {
