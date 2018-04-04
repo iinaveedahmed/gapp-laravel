@@ -3,6 +3,7 @@
 namespace Ipaas;
 
 use Ipaas\Exception\GException;
+use Ipaas\Exception\JsonExceptionRender;
 use Ipaas\Exception\ValidationException;
 use Dingo\Api\Exception\RateLimitExceededException;
 use Google\Cloud\Core\Exception\BadRequestException;
