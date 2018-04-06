@@ -4,6 +4,7 @@ namespace Ipaas\Middleware;
 
 use Carbon\Carbon;
 use Closure;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\UnauthorizedException;
 
 /**
@@ -27,6 +28,7 @@ class AuthAndLog
     {
         // auth api key
         if (!$request->has('x-api-key') && $request['x-api-key'] != env('API_KEY', 'development')) {
+            Log::alert('Unauthorized request');
             // todo update service call on core
             // throw new UnauthorizedException("x-api-key mismatch");
         }
@@ -44,6 +46,7 @@ class AuthAndLog
         }
 
         // log information
+        /** @noinspection PhpUndefinedFieldInspection */
         ilog()
             ->client($request->client ?: 'Unknown')
             ->uuid($request->uuid ?: null)

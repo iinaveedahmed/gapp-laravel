@@ -18,6 +18,7 @@ if (!function_exists('UnauthorizedException')) {
     /**
      * Throw Unauthorized Exception
      * @param Exception $exception
+     * @param null $message
      * @throws Exception
      */
     function UnauthorizedException(Exception $exception, $message = null)
@@ -30,6 +31,7 @@ if (!function_exists('BadRequestException')) {
     /**
      * Throw Bad Request Exception
      * @param Exception $exception
+     * @param null $message
      * @throws Exception
      */
     function BadRequestException(Exception $exception, $message = null)
@@ -42,6 +44,7 @@ if (!function_exists('TooManyRequestException')) {
     /**
      * Throw Too Many Request Exception
      * @param Exception $exception
+     * @param null $message
      * @throws Exception
      */
     function TooManyRequestException(Exception $exception, $message = null)
@@ -54,6 +57,7 @@ if (!function_exists('NotFoundException')) {
     /**
      * Throw Not Found Exception
      * @param Exception $exception
+     * @param null $message
      * @throws Exception
      */
     function NotFoundException(Exception $exception, $message = null)
@@ -66,6 +70,7 @@ if (!function_exists('InternalServerException')) {
     /**
      * Throw Internal Server Exception
      * @param Exception $exception
+     * @param null $message
      * @throws Exception
      */
     function InternalServerException(Exception $exception, $message = null)

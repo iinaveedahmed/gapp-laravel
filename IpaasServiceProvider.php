@@ -17,9 +17,6 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\CssSelector\Exception\InternalErrorException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use XeroPHP\Remote\Exception\NotAvailableException;
-use XeroPHP\Remote\Exception\NotImplementedException;
-use XeroPHP\Remote\Exception\OrganisationOfflineException;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -47,16 +44,21 @@ class IpaasServiceProvider extends ServiceProvider
         require_once __DIR__ . '/Helper/include.php';
 
         /*
+         * Add logging channel 'stackdriver'
+         */
+        $this->mergeConfigFrom(__DIR__ . '/Logger/config.php', 'logging.channels');
+
+        /*
          * Init singleton ipaas-info with Ipaas/Info/Client
          */
-        $this->app->singleton('ipaas-info', function ($app) {
+        $this->app->singleton('ipaas-info', function () {
             return new Client();
         });
 
         /*
         * Init singleton ipaas-info with Ipaas/Response
         */
-        $this->app->singleton('ipaas-response', function ($app) {
+        $this->app->singleton('ipaas-response', function () {
             return new Response();
         });
 
@@ -80,16 +82,7 @@ class IpaasServiceProvider extends ServiceProvider
         app('Dingo\Api\Exception\Handler')->register(function (InternalErrorException $exception) {
             return JsonExceptionRender::render($exception);
         });
-        app('Dingo\Api\Exception\Handler')->register(function (NotAvailableException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
         app('Dingo\Api\Exception\Handler')->register(function (NotFoundException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (NotImplementedException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (OrganisationOfflineException $exception) {
             return JsonExceptionRender::render($exception);
         });
         app('Dingo\Api\Exception\Handler')->register(function (RateLimitExceededException $exception) {

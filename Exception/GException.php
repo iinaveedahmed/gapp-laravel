@@ -48,6 +48,7 @@ class GException extends ExceptionHandler
      * @param  \Illuminate\Http\Request $request
      * @param  \Exception $exception
      * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function render($request, Exception $exception)
     {

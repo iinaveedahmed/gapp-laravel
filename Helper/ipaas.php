@@ -3,7 +3,7 @@ if (!function_exists('ilog')) {
 
     /**
      * @param null $key
-     * @return \Illuminate\Foundation\Application|\Ipaas\Info\Client|mixed|ipaas-info
+     * @return \Illuminate\Foundation\Application|\Ipaas\Logger\Client|mixed|ipaas-info
      * @throws \Illuminate\Container\EntryNotFoundException
      */
     function ilog($key = null)
