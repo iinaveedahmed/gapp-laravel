@@ -26,6 +26,15 @@ class AuthAndLog
      */
     public function handle($request, Closure $next)
     {
+        // log information
+        /** @noinspection PhpUndefinedFieldInspection */
+        ilog()
+            ->client($request->client ?: 'Unknown')
+            ->uuid($request->uuid ?: null)
+            ->key($request->header('Authorization') ?: 'TEST')
+            ->dateFrom($request->dateFrom ?: Carbon::now())
+            ->dateTo($request->dateTo ?: Carbon::now());
+
         // auth api key
         if (!$request->has('x-api-key') && $request['x-api-key'] != env('API_KEY', 'development')) {
             Log::alert('Unauthorized request');
@@ -44,15 +53,6 @@ class AuthAndLog
             ilog()->type('corn');
             //throw new UnauthorizedException("Only accepts request from app engine");
         }
-
-        // log information
-        /** @noinspection PhpUndefinedFieldInspection */
-        ilog()
-            ->client($request->client ?: 'Unknown')
-            ->uuid($request->uuid ?: null)
-            ->key($request->header('Authorization') ?: 'TEST')
-            ->dateFrom($request->dateFrom ?: Carbon::now())
-            ->dateTo($request->dateTo ?: Carbon::now());
 
         return $next($request);
     }
