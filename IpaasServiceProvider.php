@@ -2,21 +2,13 @@
 
 namespace Ipaas;
 
+use Exception;
+use Illuminate\Contracts\Http\Kernel;
+use Illuminate\Support\ServiceProvider;
 use Ipaas\Exception\GException;
 use Ipaas\Exception\JsonExceptionRender;
-use Ipaas\Exception\ValidationException;
-use Dingo\Api\Exception\RateLimitExceededException;
-use Google\Cloud\Core\Exception\BadRequestException;
-use Google\Cloud\Core\Exception\NotFoundException;
-use Illuminate\Validation\UnauthorizedException;
-use Ipaas\Middleware\AuthAndLog;
 use Ipaas\Logger\Client;
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\ServiceProvider;
-use Symfony\Component\CssSelector\Exception\InternalErrorException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Ipaas\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -73,31 +65,7 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        app('Dingo\Api\Exception\Handler')->register(function (HttpException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (BadRequestException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (InternalErrorException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (NotFoundException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (RateLimitExceededException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (UnauthorizedException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (ValidationException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (ModelNotFoundException $exception) {
-            return JsonExceptionRender::render($exception);
-        });
-        app('Dingo\Api\Exception\Handler')->register(function (QueryException $exception) {
+        app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
             return JsonExceptionRender::render($exception);
         });
 
