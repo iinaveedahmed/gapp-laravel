@@ -55,7 +55,7 @@ class AuthAndLog
             //throw new UnauthorizedException("Only accepts request from app engine");
         }
 
-        $request = new \Ipaas\Request($request);
+        // $request = new \Ipaas\Request($request);
 
         return $next($request);
     }
