@@ -4,6 +4,7 @@ namespace Ipaas\Middleware;
 
 use Carbon\Carbon;
 use Closure;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\UnauthorizedException;
 
@@ -19,12 +20,12 @@ class AuthAndLog
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param  Request $request
      * @param  \Closure $next
      * @return mixed
      * @throws \Exception
      */
-    public function handle($request, Closure $next)
+    public function handle(Request $request, Closure $next)
     {
         // log information
         /** @noinspection PhpUndefinedFieldInspection */
@@ -53,6 +54,8 @@ class AuthAndLog
             ilog()->type('corn');
             //throw new UnauthorizedException("Only accepts request from app engine");
         }
+
+        $request = new \Ipaas\Request($request);
 
         return $next($request);
     }

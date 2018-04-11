@@ -2,6 +2,7 @@
 
 namespace Ipaas;
 
+use Illuminate\Http\Request as BaseRequest;
 use Illuminate\Support\Facades\Validator;
 use Ipaas\Exception\ValidationException;
 
@@ -9,21 +10,8 @@ use Ipaas\Exception\ValidationException;
  * Class Request
  * @package Ipaas
  */
-class Request
+class Request extends BaseRequest
 {
-    /**
-     * @var \Illuminate\Http\Request|Request $this
-     */
-
-    /**
-     * @var \Illuminate\Http\Request
-     */
-    protected $instance;
-
-    public function __construct(\Illuminate\Http\Request $instance)
-    {
-        $this->instance = $instance;
-    }
 
     /**
      * @param string $item
@@ -97,44 +85,5 @@ class Request
             );
         }
         return $this;
-    }
-
-    /**
-     * @param string $property
-     * @return bool
-     */
-    public function has(
-        string $property
-    ) {
-        return $this->instance->has($property);
-    }
-
-    /**
-     * @return array
-     */
-    public function all()
-    {
-        return $this->instance->all();
-    }
-
-    /**
-     * @method
-     * @param $method
-     * @param $args
-     * @return mixed
-     */
-    public function __call($method, $args)
-    {
-        return call_user_func_array(array($this->instance, $method), $args);
-    }
-
-    public function __get($key)
-    {
-        return $this->instance->$key;
-    }
-
-    public function __set($key, $val)
-    {
-        return $this->instance->$key = $val;
     }
 }
