@@ -32,7 +32,15 @@ class Request extends BaseRequest
         array $server = array(),
         $content = null
     ) {
-        parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+        parent::__construct(
+            request()->query->all(),
+            request()->request->all(),
+            request()->attributes->all(),
+            request()->cookies->all(),
+            request()->files->all(),
+            request()->server->all(),
+            request()->content
+        );
     }
 
     /**
