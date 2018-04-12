@@ -49,8 +49,8 @@ class Request extends BaseRequest
      */
     public function boolify(string $item)
     {
-        if ($this->instance->has($item)) {
-            $list = $this->instance->all();
+        if ($this->has($item)) {
+            $list = $this->all();
             $object = $list[$item];
             if (strtolower($object) === 'true') {
                 $object = true;
@@ -59,7 +59,7 @@ class Request extends BaseRequest
                 $object = false;
                 $list[$item] = $object;
             }
-            $this->instance->replace($list);
+            $this->replace($list);
         }
 
         return $this;
@@ -71,8 +71,8 @@ class Request extends BaseRequest
      */
     public function arrify(string $item)
     {
-        if ($this->instance->has($item)) {
-            $list = $this->instance->all();
+        if ($this->has($item)) {
+            $list = $this->all();
             $object = $list[$item];
             if ($object !== null) {
                 $list[$item] = is_array($object) ? $object : explode(',', $object);
@@ -90,7 +90,7 @@ class Request extends BaseRequest
      */
     public function requestify(string $item, mixed $value)
     {
-        $list = $this->instance->all();
+        $list = $this->all();
         $list[$item] = $value;
         request()->replace($list);
         return $this;
@@ -104,7 +104,7 @@ class Request extends BaseRequest
      */
     public function validate(array $rules)
     {
-        $list = $this->instance->all();
+        $list = $this->all();
         $validator = Validator::make($list, $rules);
 
         if ($validator->fails()) {
