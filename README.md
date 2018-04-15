@@ -17,11 +17,11 @@ This package includes
   * Converter
 
 # Setup
-add composer package ``
+add composer package `composer require inaveedahmed/gapp-laravel`
   
-Make sure that the
- **ENV:** LOG_CHANNEL is set to `stackdriver`; and
-**ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`
+Make sure that the  
+ **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
+ **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
 
 # API  Documentation
 ## Log-info (ilog)
