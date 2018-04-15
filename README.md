@@ -17,20 +17,7 @@ This package includes
   * Converter
 
 # Setup
-Copy package files to `app/Ipaas`
-Register service provider by adding
-```php
-App\Ipaas\Ipaas::class
-```
-before _Application Service Providers_ in `config/app.php`
-Add log channel by adding
-```php
-"stackdriver" => [
-	"driver" => "custom",
-    "via" => \App\Ipaas\GLogger::class,
-],
- ```
-in `config/logging.php`
+add composer package ``
   
 Make sure that the
  **ENV:** LOG_CHANNEL is set to `stackdriver`; and
