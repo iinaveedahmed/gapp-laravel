@@ -1,5 +1,5 @@
 {
-  "name": "inaveedahmed/gapp-laravel",
+  "name": "ipaas/gapp-laravel",
   "type": "library",
   "license": "proprietary",
   "description": "IPaaS package for laravel provides php support for google app-engine logging and handling",
