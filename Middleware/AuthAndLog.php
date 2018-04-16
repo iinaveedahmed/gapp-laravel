@@ -37,25 +37,21 @@ class AuthAndLog
             ->dateTo($request->dateTo ?: Carbon::now());
 
         // auth api key
-        if (!$request->has('x-api-key') && $request['x-api-key'] != env('API_KEY', 'development')) {
-            Log::alert('Unauthorized request');
-            // todo update service call on core
-            // throw new UnauthorizedException("x-api-key mismatch");
+        if (env('API_KEY')) {
+            if (!$request->has('x-api-key')
+                && $request['x-api-key'] != env('API_KEY', 'development')) {
+                Log::alert('Unauthorized request');
+                throw new UnauthorizedException("x-api-key mismatch");
+            }
         }
 
-        // todo lock on app engine
-        if (config('app.env') == 'production' && !$request->header('X-Appengine-Inbound-Appid')) {
+        // lock on app engine
+        if (config('app.env') == 'production'
+            && env('APP_ENGINE_ONLY') !== false
+            && !$request->header('X-Appengine-Inbound-Appid')) {
             ilog()->type('default');
-            //throw new UnauthorizedException("Only accepts request from app engine");
+            throw new UnauthorizedException("Only accepts request from app engine");
         }
-
-        // todo lock on cron
-        if (config('app.env') == 'production' && !$request->header('X-AppEngine-Cron')) {
-            ilog()->type('corn');
-            //throw new UnauthorizedException("Only accepts request from app engine");
-        }
-
-        // $request = new \Ipaas\Request($request);
 
         return $next($request);
     }
