@@ -107,11 +107,11 @@ function validateUserName(User $user){
 ### Validation
 By default this library try to validate request by checking headers:
 * x-api-key (set via .env)
-by default system will try to match header `x-api-key` with **ENV**`APIKEY` for validation
-_to disable remove **ENV**`APIKEY`_
+by default system will try to match header `x-api-key` with **ENV**`API_KEY` for validation
+_to disable remove **ENV**`API_KEY`_
 * X-Appengine-Inbound-Appid
 by default this check validate if app engine header is set (_default active on swagger_)
-_to disable set **ENV**`APPENGINEONLY=false` (default = true)_
+_to disable set **ENV**`APP_ENGINE_ONLY=false` (default = true)_
 
 ### Logging
 By default library try to translate and log following details:
