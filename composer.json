@@ -23,12 +23,4 @@
       "Ipaas\\": "."
     }
   },
-
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Ipaas\\IpaasServiceProvider"
-      ]
-    }
-  }
 }
