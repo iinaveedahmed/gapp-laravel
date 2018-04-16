@@ -1,23 +1,30 @@
 
+
 # iPaaS package for Laravel
 This package includes
 * Driver for Google stack logging
 * Exception handler for Google error reporting
 * Log-info (`iLog`) helper
-  * To collect info on runtime through laravel service container interface
-  * To render collected info and attach to each log context
-* Exception helpers
+	* To collect info on runtime through laravel service container interface
+	* To render collected info and attach to each log context
+* Middleware
+	* To authenticate request
+	* To capture initial request for logger
+* Request
+	* To provide additional methods with request
+* Exceptions
 	* To report  exception with Log-info context
 	* To render exception according to _iPaaS_ set standards
+* Response
+	* To all context information with response
+	* To render error and respose  according to _iPaaS_ set standards
 * Other helpers
-  * Response helper
-  * Request modifiers
-  * Request helper
-  * Generator
-  * Converter
+	* Converter
+	* [more coming soon]
 
 # Setup
-add composer package `composer require inaveedahmed/gapp-laravel`
+add composer package `ipaas/gapp-laravel: ^1.0` and do `composer update`  
+or run `composer require ipaas/gapp-laravel`
   
 Make sure that the  
  **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
@@ -33,6 +40,8 @@ Helper to add context information to all log entries.
 `ilog()` is a helper method returning singleton class `IPaaS/Info/Client.php`
 To add context info just call `ilog()` and chain any method available.
 Following methods are available:
+
+
 |                 Method                     |              Usage              |
 |--------------------------------------------|---------------------------------|
 |`client (string)`                           |set client id/name               |
@@ -45,6 +54,7 @@ Following methods are available:
 |`uuid (string|null)`                        |universal unique identifier      |
 |`toArray()`                                 |get all info as array            |
 
+
 > `iLog([data-set])` can be use to re-init* log data. 
 > _*can be use to pass log-info to queue jobs_
 
@@ -54,7 +64,7 @@ Following example will write log in GCloud Logging with all provided context
 /* ------ Class A ------- */
 function validateUser(Request $request){
 	// validate request
-	$data = validate(['user_id'=>'integer|required']);
+	$request->validate(['user_id'=>'integer|required']);
 
 	// get user details
 	$user = User::get($data->user_id);
@@ -92,95 +102,46 @@ function validateUserName(User $user){
 	}
 }
 ```
+## Middleware
 
-## Exceptions
->These helper function can be call directly
+### Validation
+By default this library try to validate request by checking headers:
+* x-api-key (set via .env)
+by default system will try to match header `x-api-key` with **ENV**`APIKEY` for validation
+_to disable remove **ENV**`APIKEY`_
+* X-Appengine-Inbound-Appid
+by default this check validate if app engine header is set (_default active on swagger_)
+_to disable set **ENV**`APPENGINEONLY=false` (default = true)_
 
-|                 Method                   	|                     Usage                      		|
-|-------------------------------------------|-------------------------------------------------------|
-|`iThrow(Exception, HTTP_CODE)`             |process and throw any exception with custom code		|
-|`UnauthorizedException(Exception)`			|process and throw **Unauthorized** exception (401)		|
-|`BadRequestException(Exception)`			|process and throw **Bad Request** exception (400)		|
-|`TooManyRequestException(Exception)`		|process and throw **Too Many Request** exception (429)	|
-|`NotFoundException(Exception)`				|process and throw **Not Found** exception (429)		|
-|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (429)	|
-
-**Example**
-Following exception with 
+### Logging
+By default library try to translate and log following details:
 ```php
-/* ------ Class C ------- */
+$request->client 					// client info
+$request->uuid						// request uuid
+$request->header('Authorization')	// auth value from header
+$request->dateFrom					// date from
+$request->dateTo					// date to
+```
 
-/**
-* Validate information
-* @param MetaData $metaData 'A laravel model'
-* @return boolean
-* @throws Exception
-* /
-function validateMetaData(MetaData $metaData){
-	
-	iLog()
-	->data($info) // add complete model to context
-	->type('simple meta validation') // add type context
-
-	if ($metaData->method == 'advance'){
-		// context override
-		iLog()->type('advance meta validation');
-	}
-	
-	// lets log event info
-	Log::info('Validating meta data');
-	
-	// validating
-	try {
-		return CronClient::get($metaData);
-	} catch (Exception $e) {
-	
-		// check if error is too many request
-		if($e->getCode === 433) {
-			TooManyRequestException($e); // will throw with code 429
-		} else {
-			InternalServerException($e); // will throw with code 500
-		}
+## Request
+Request is resolved using `Ipass/Request` controller
+to use see the given example:
+```php
+use Ipaas\Request;
+use Ipass\Response;
+class Accounts extends Response;  
+{
+	public function index(Request $request)  
+	{  
+	  $rules = ['name' => 'required|string'];  
+	  $request->validate($rules);
 	}
 }
 ```
-## Other Helpers
-### Response
-> Response helper `iresponse`
-or
-> Response decorator controller
-`[YOUR CONTROLLER] extends Ipaas/Response.php` 
-
-**Set Meta**
-Chain-able function to set response meta data
-```php
-return $this->meta(['client-id'=>'unknown'])->sendResponse($data);
-```
-
-**Set header**
-Chain-able function to set response header data
-```php
-return $this->header(['content-type'=>'application/json'])->sendResponse($data);
-```
-
-**AllErrors** 
-* `errorValidation()`
-* `errorUnauthorized()`
-* `errorBadRequest()`
-* `errorTooManyRequest()`
-* `errorNotFound()`
-* `errorNotImplemented()`
-* `errorInternalServer()`
-* Main: `sendError()`
-
-
-### Request
-> Request helper `irequest()`  
-`code/app/Ipaas/Ipaas.php`
 
 all given function are chain-able when extend method is used
 ```php
-        $request = irequest()
+        $request
             ->boolify('EnablePaymentsToAccount')
             ->arrify('Type')
             ->validate($rules);
@@ -220,6 +181,88 @@ Func: requestify(string $item, mixed $value)
 
 Return: modified REQUEST
 ```
+
+## Exceptions
+>These helper function can be call directly
+
+|                 Method                   	|                     Usage                      		|
+|-------------------------------------------|-------------------------------------------------------|
+|`iThrow(Exception, HTTP_CODE)`             |process and throw any exception with custom code		|
+|`UnauthorizedException(Exception)`			|process and throw **Unauthorized** exception (401)		|
+|`BadRequestException(Exception)`			|process and throw **Bad Request** exception (400)		|
+|`TooManyRequestException(Exception)`		|process and throw **Too Many Request** exception (429)	|
+|`NotFoundException(Exception)`				|process and throw **Not Found** exception (429)		|
+|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (429)	|
+
+**Example**
+Following exception with 
+```php
+/* ------ Class C ------- */
+
+/**
+* Validate information
+* @param MetaData $metaData 'A laravel model'
+* @return boolean
+* @throws Exception
+*/
+function validateMetaData(MetaData $metaData){
+	
+	iLog()
+	->data($info) // add complete model to context
+	->type('simple meta validation') // add type context
+
+	if ($metaData->method == 'advance'){
+		// context override
+		iLog()->type('advance meta validation');
+	}
+	
+	// lets log event info
+	Log::info('Validating meta data');
+	
+	// validating
+	try {
+		return CronClient::get($metaData);
+	} catch (Exception $e) {
+	
+		// check if error is too many request
+		if($e->getCode === 433) {
+			TooManyRequestException($e); // will throw with code 429
+		} else {
+			InternalServerException($e); // will throw with code 500
+		}
+	}
+}
+```
+## Response
+> Response helper `iresponse`
+or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.php` 
+
+**Set Meta**
+Chain-able function to set response meta data
+```php
+return $this->meta(['client-id'=>'unknown'])->sendResponse($data);
+```
+
+**Set header**
+Chain-able function to set response header data
+```php
+return $this->header(['content-type'=>'application/json'])->sendResponse($data);
+```
+
+**AllErrors** 
+* `errorValidation()`
+* `errorUnauthorized()`
+* `errorBadRequest()`
+* `errorTooManyRequest()`
+* `errorNotFound()`
+* `errorNotImplemented()`
+* `errorInternalServer()`
+* Main: `sendError()`
+```php
+return $this->errorNotImplemented();
+```
+
+## Other Helpers
 ### Converter
 > Ipaas/Helper/Converter
 
