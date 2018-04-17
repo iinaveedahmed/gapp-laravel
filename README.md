@@ -17,14 +17,28 @@ This package includes
 	* To render exception according to _iPaaS_ set standards
 * Response
 	* To all context information with response
-	* To render error and respose  according to _iPaaS_ set standards
+	* To render error and response  according to _iPaaS_ set standards
 * Other helpers
 	* Converter
 	* [more coming soon]
 
 # Setup
-add composer package `ipaas/gapp-laravel: ^1.0` and do `composer update`  
-or run `composer require ipaas/gapp-laravel`
+### i. Add Package
+Run composer update after adding composer package
+```php
+ipaas/gapp-laravel: ~1.1.0
+```
+**OR;** by running
+
+```bash
+composer require ipaas/gapp-laravel
+```
+
+### ii. Register Provider
+Add provider class in `config/app.php` before **Application service providers**
+```php
+Ipaas\IpaasServiceProvider::class,
+```
   
 Make sure that the  
  **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
@@ -284,3 +298,5 @@ Func: boolifyList(array $list, string $item)
 Return: modified list
 ```
 
+## Note
+_ps. google/cloud package is required to run application on google app engine flex environment_

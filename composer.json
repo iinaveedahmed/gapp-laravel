@@ -1,7 +1,7 @@
 {
   "name": "ipaas/gapp-laravel",
   "type": "library",
-  "license": "proprietary",
+  "license": "CC-BY-NC-ND-4.0",
   "description": "IPaaS package for laravel provides php support for google app-engine logging and handling",
   "homepage": "https://5andhalf.com/",
   "minimum-stability": "dev",
