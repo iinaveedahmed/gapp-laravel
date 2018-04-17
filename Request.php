@@ -8,6 +8,7 @@ use Ipaas\Exception\ValidationException;
 
 /**
  * Class Request
+ *
  * @package Ipaas
  */
 class Request extends BaseRequest
@@ -32,6 +33,10 @@ class Request extends BaseRequest
         array $server = array(),
         $content = null
     ) {
+        // temp store data
+        $request_date = request()->all();
+
+        // construct new request
         parent::__construct(
             request()->query->all(),
             request()->request->all(),
@@ -41,6 +46,9 @@ class Request extends BaseRequest
             request()->server->all(),
             request()->content
         );
+
+        // reset temp data
+        $this->replace($request_date);
     }
 
     /**
