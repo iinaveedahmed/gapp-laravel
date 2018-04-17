@@ -2,7 +2,7 @@
 namespace Ipaas\Exception;
 
 use Exception;
-use Illuminate\Validation\Validator;
+use Illuminate\Contracts\Validation\Validator;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ValidationException extends HttpException
