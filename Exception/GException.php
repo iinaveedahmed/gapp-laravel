@@ -61,16 +61,11 @@ class GException extends ExceptionHandler
         }
 
         // If the request wants JSON (AJAX doesn't always want JSON)
-        if ($request->wantsJson()) {
-            JsonExceptionRender::render($exception, $parentMessage);
-        }
-
-        if ($exception instanceof ValidationException) {
-            foreach ($exception->validator->errors()->all() as $message) {
-                $errors[] = [
-                    'message' => $message,
-                ];
-            }
+        if ($request->expectsJson() || $request->isJson()) {
+            return JsonExceptionRender::render(
+                $exception,
+                $parentMessage
+            );
         }
 
         return parent::render($request, $exception);
