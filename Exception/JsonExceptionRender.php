@@ -2,6 +2,7 @@
 namespace Ipaas\Exception;
 
 use Exception;
+use Illuminate\Validation\ValidationException;
 
 class JsonExceptionRender
 {
@@ -14,14 +15,6 @@ class JsonExceptionRender
     public static function render(Exception $exception, $parentMessage = null)
     {
         $errors = null;
-
-        if ($exception instanceof ValidationException) {
-            foreach ($exception->validator->errors() as $message) {
-                $errors[] = [
-                    'message' => $message,
-                ];
-            }
-        }
 
         $message = $parentMessage ?: $exception->getMessage();
         $stack = null;
@@ -45,6 +38,13 @@ class JsonExceptionRender
             $status = $exception->getStatusCode();
         } else {
             $status = 500;
+        }
+
+        if ($exception instanceof ValidationException) {
+            /** @var ValidationException $exception */
+            $errors = $exception->errors();
+            $status = $exception->status;
+            $message = $exception->response;
         }
 
         return $response->sendError($message, $status, md5(uniqid()), $errors, $stack);
