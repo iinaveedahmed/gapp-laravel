@@ -4,7 +4,7 @@ namespace Ipaas;
 
 use Illuminate\Http\Request as BaseRequest;
 use Illuminate\Support\Facades\Validator;
-use Ipaas\Exception\ValidationException;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class Request
@@ -96,7 +96,7 @@ class Request extends BaseRequest
      * @param mixed $value
      * @return $this
      */
-    public function requestify(string $item, mixed $value)
+    public function requestify(string $item, $value)
     {
         $list = $this->all();
         $list[$item] = $value;

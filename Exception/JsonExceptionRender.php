@@ -10,7 +10,6 @@ class JsonExceptionRender
      * @param Exception $exception
      * @param null $parentMessage
      * @return mixed
-     * @throws \Illuminate\Container\EntryNotFoundException
      */
     public static function render(Exception $exception, $parentMessage = null)
     {

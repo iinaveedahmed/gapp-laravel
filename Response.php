@@ -2,13 +2,18 @@
 
 namespace Ipaas;
 
-use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Routing\Controller;
 use Illuminate\Http\Response as LResponse;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class Response extends Controller
 {
+    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
     /**
      * Metadata
      * @var array
