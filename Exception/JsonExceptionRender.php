@@ -35,8 +35,10 @@ class JsonExceptionRender
 
         if (method_exists($exception, 'getStatusCode')) {
             $status = $exception->getStatusCode();
+        } elseif (method_exists($exception, 'getCode')) {
+            $status = $exception->getCode() > 0 ? $exception->getCode() : 500;
         } else {
-            $status = $exception->getCode() ?? 500;
+            $status = 500;
         }
 
         if ($exception instanceof ValidationException) {
