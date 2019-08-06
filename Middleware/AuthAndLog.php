@@ -2,9 +2,10 @@
 
 namespace Ipaas\Middleware;
 
-use Carbon\Carbon;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\UnauthorizedException;
 
@@ -20,39 +21,63 @@ class AuthAndLog
     /**
      * Handle an incoming request.
      *
-     * @param  Request $request
-     * @param  \Closure $next
+     * @param Request $request
+     * @param \Closure $next
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(Request $request, Closure $next)
     {
-        // log information
-        /** @noinspection PhpUndefinedFieldInspection */
-        ilog()
-            ->client($request->client ?: 'Unknown')
-            ->uuid($request->uuid ?: null)
-            ->key($request->header('Authorization') ?: 'TEST')
-            ->dateFrom($request->dateFrom ?: Carbon::now())
-            ->dateTo($request->dateTo ?: Carbon::now());
+        $this->setILogFields($request);
 
-        // auth api key
-        if (env('API_KEY')) {
-            if (!$request->has('x-api-key')
-                && $request['x-api-key'] != env('API_KEY', 'development')) {
-                Log::alert('Unauthorized request');
-                throw new UnauthorizedException("x-api-key mismatch");
-            }
+        if ($this->isInvalidApiKey()) {
+            Log::alert('Unauthorized request');
+            throw new UnauthorizedException('x-api-key mismatch');
         }
 
         // lock on app engine
-        if (config('app.env') == 'production'
-            && env('APP_ENGINE_ONLY') !== false
-            && !$request->header('X-Appengine-Inbound-Appid')) {
-            ilog()->type('default');
-            throw new UnauthorizedException("Only accepts request from app engine");
+        if (config('app.env') == 'production' && env('APP_ENGINE_ONLY') !== false) {
+            ilog()->setType('default');
+            throw new UnauthorizedException('Only accepts request from app engine');
         }
 
         return $next($request);
+    }
+
+    /**
+     * @param Request $request
+     * @param $apiKeyExists
+     * @return bool
+     */
+    private function isInvalidApiKey(): bool
+    {
+        $apiKey = ilog()->dataSet['client_key'] ?? null;
+        if (empty($apiKey)) {
+            return true;
+        }
+
+        try {
+            $apiKeyExists = DB::table('auths')->whereApiKey($apiKey)->exists();
+        } catch (Exception $e) {
+            throw new UnauthorizedException('Tha `auths` table is not created.');
+        }
+
+        return !$apiKeyExists || (env('API_KEY') && $apiKey != env('API_KEY', 'development'));
+    }
+
+    /**
+     * @param Request $request
+     * @throws Exception
+     */
+    private function setILogFields(Request $request): void
+    {
+        /** @noinspection PhpUndefinedFieldInspection */
+        ilog()
+            ->setClientId($request->header('Authorization'))
+            ->setClientKey($request->header('x-api-key'))
+            ->setRequestId($request->header('Amaka-Request-ID'))
+            ->setUuid($request->uuid)
+            ->setDateFrom($request->dateFrom)
+            ->setDateTo($request->dateTo);
     }
 }
