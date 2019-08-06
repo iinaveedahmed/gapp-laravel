@@ -13,7 +13,7 @@ class GLogger
 {
     public function __invoke(array $config)
     {
-        $logName = isset($config['logName']) ? $config['logName'] : 'app';
+        $logName = $config['logName'] ?? 'app';
         $psrLogger = LoggingClient::psrBatchLogger($logName);
         $handler = new PsrHandler($psrLogger);
         $logger = new Logger(
