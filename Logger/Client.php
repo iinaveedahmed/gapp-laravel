@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipaas\Logger;
 
 use Carbon\Carbon;
@@ -12,33 +13,6 @@ use Illuminate\Support\Str;
 class Client extends Base
 {
     /**
-     * @param string
-     * @return Client
-     */
-    public function client(string $client): Client
-    {
-        return $this->prop($client, 'client-id');
-    }
-
-    /**
-     * @param string
-     * @return Client
-     */
-    public function key(string $value): Client
-    {
-        return $this->prop($value, 'client-key');
-    }
-
-    /**
-     * @param string
-     * @return Client
-     */
-    public function type(string $value): Client
-    {
-        return $this->prop($value, 'type');
-    }
-
-    /**
      * @param string $value
      * @param $name
      * @return Client
@@ -50,12 +24,51 @@ class Client extends Base
     }
 
     /**
+     * @param string
+     * @return Client
+     */
+    public function setClientId(string $client = null): Client
+    {
+        $value = $client ?? 'Unknown';
+        return $this->prop($value, 'client_id');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setClientKey(string $value = null): Client
+    {
+        $value = $value ?? 'Unknown';
+        return $this->prop($value, 'client_key');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setRequestId(string $value = null): Client
+    {
+        $value = $value ?? 'Unknown';
+        return $this->prop($value, 'request_id');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setType(string $value): Client
+    {
+        return $this->prop($value, 'type');
+    }
+
+    /**
      * @param string|Carbon $value
      * @param string $name
      * @return Client
      * @throws Exception
      */
-    public function date($value, string $name): Client
+    public function setDate($value, string $name): Client
     {
         /**
          * @type Carbon $value
@@ -75,9 +88,10 @@ class Client extends Base
      * @return Client
      * @throws Exception
      */
-    public function dateFrom($value): Client
+    public function setDateFrom($value = null): Client
     {
-        return $this->date($value, 'date-from');
+        $value = $value ?? Carbon::now();
+        return $this->setDate($value, 'date_from');
     }
 
     /**
@@ -85,17 +99,19 @@ class Client extends Base
      * @return Client
      * @throws Exception
      */
-    public function dateTo($value): Client
+    public function setDateTo($value = null): Client
     {
-        return $this->date($value, 'date-to');
+        $value = $value ?? Carbon::now();
+        return $this->setDate($value, 'date_to');
     }
 
     /**
      * @param string
      * @return Client
      */
-    public function uuid(string $value = null): Client
+    public function setUuid(string $value = null): Client
     {
-        return $this->prop($value ? $value : Str::uuid(), 'uuid');
+        $value = $value ?? Str::uuid();
+        return $this->prop($value, 'uuid');
     }
 }
