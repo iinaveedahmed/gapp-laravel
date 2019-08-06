@@ -5,6 +5,7 @@ namespace Ipaas;
 use Illuminate\Http\Request as BaseRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class Request
@@ -116,12 +117,9 @@ class Request extends BaseRequest
         $validator = Validator::make($list, $rules);
 
         if ($validator->fails()) {
-            throw new ValidationException(
-                $validator,
-                'Invalid request',
-                422
-            );
+            throw new ValidationException($validator, 'Invalid request', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
         return $this;
     }
 }
