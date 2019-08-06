@@ -62,10 +62,10 @@ Following methods are available:
 |`key (string)`                              |set client key/token             |
 |`type (string)`                             |type of request                  |
 |`prop ((string)value, (string)name)`        |any custom key and value         | 
-|`date ((string|Carbon)value, (string)name)` |any custom date key and value    |
-|`dateFrom (string|Carbon)`                  |sync/request date from           |
-|`dateTo (string|Carbon)`                    |sync/request date to             |
-|`uuid (string|null)`                        |universal unique identifier      |
+|`date ((string⎮Carbon)value, (string)name)` |any custom date key and value    |
+|`dateFrom (string⎮Carbon)`                  |sync/request date from           |
+|`dateTo (string⎮Carbon)`                    |sync/request date to             |
+|`uuid (string⎮null)`                        |universal unique identifier      |
 |`toArray()`                                 |get all info as array            |
 
 
@@ -86,12 +86,12 @@ function validateUser(Request $request){
 	if ($user) {	
 		
 		/********LOG-INFO PROVIDER*******/
-		iLog() 			// add user details to context
-		->client($user->id) // client id to context
-		->key($user->key);  // client key to context
+		iLog()                          // add user details to context
+		->setClientId($user->id)        // client id to context
+		->setClientKey($user->key);     // client key to context
 		
 		// add request details context
-		iLog()->type('Validate user name');
+		iLog()->setType('Validate user name');
 
 		// Calling other class to resolve request
 		return ClassB::validateUserName($user);
@@ -121,20 +121,18 @@ function validateUserName(User $user){
 ### Validation
 By default this library try to validate request by checking headers:
 * x-api-key (set via .env)
-by default system will try to match header `x-api-key` with **ENV**`API_KEY` for validation
-_to disable remove **ENV**`API_KEY`_
-* X-Appengine-Inbound-Appid
-by default this check validate if app engine header is set (_default active on swagger_)
-_to disable set **ENV**`APP_ENGINE_ONLY=false` (default = true)_
+by default system will try to match header `x-api-key` with **ENV** `API_KEY` for validation
+_to disable remove **ENV** `API_KEY`_
 
 ### Logging
 By default library try to translate and log following details:
 ```php
-$request->client 					// client info
-$request->uuid						// request uuid
-$request->header('Authorization')	// auth value from header
-$request->dateFrom					// date from
-$request->dateTo					// date to
+$request->header('Authorization')       // Authorization value from header
+$request->header('x-api-key')           // Client ID from header
+$request->header('Amaka-Request-ID')    // Amaka Request ID from header
+$request->uuid                          // request uuid
+$request->dateFrom                      // date from
+$request->dateTo                        // date to
 ```
 
 ## Request
@@ -223,11 +221,11 @@ function validateMetaData(MetaData $metaData){
 	
 	iLog()
 	->data($info) // add complete model to context
-	->type('simple meta validation') // add type context
+	->setType('simple meta validation') // add type context
 
 	if ($metaData->method == 'advance'){
 		// context override
-		iLog()->type('advance meta validation');
+		iLog()->setType('advance meta validation');
 	}
 	
 	// lets log event info
@@ -254,13 +252,13 @@ or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.ph
 **Set Meta**
 Chain-able function to set response meta data
 ```php
-return $this->meta(['client-id'=>'unknown'])->sendResponse($data);
+return $this->meta(['client_id' => 'unknown'])->sendResponse($data);
 ```
 
 **Set header**
 Chain-able function to set response header data
 ```php
-return $this->header(['content-type'=>'application/json'])->sendResponse($data);
+return $this->header(['content-type' => 'application/json'])->sendResponse($data);
 ```
 
 **AllErrors** 
