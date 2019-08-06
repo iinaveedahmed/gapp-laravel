@@ -10,7 +10,8 @@ if (!function_exists('iThrow')) {
      */
     function iThrow(Exception $exception, $code, $message = null)
     {
-        throw new Exception($message ?: $exception->getMessage(), $code, $exception);
+        $message = $message ?? $exception->getMessage();
+        throw new Exception($message, $code, $exception);
     }
 }
 
