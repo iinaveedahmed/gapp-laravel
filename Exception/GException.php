@@ -7,6 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Google\Cloud\ErrorReporting\Bootstrap;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 
 class GException extends ExceptionHandler
 {
@@ -54,8 +55,10 @@ class GException extends ExceptionHandler
     {
         $errors = null;
         $parentMessage = $exception->getMessage();
-        if ($exception->getPrevious() instanceof Exception
-            && strpos($exception->getFile(), 'Helper/Exception.php') >= 0
+
+        if (
+            $exception->getPrevious() instanceof Exception &&
+            strpos($exception->getFile(), 'Helper/Exception.php') >= 0
         ) {
             $exception = $exception->getPrevious();
         }
@@ -80,9 +83,8 @@ class GException extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_BAD_REQUEST);
         }
 
         return redirect()->guest(route('login'));
