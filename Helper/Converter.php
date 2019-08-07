@@ -1,6 +1,6 @@
 <?php
 
-if (! function_exists('normalizedName')) {
+if (!function_exists('normalizedName')) {
     /**
      * Normalize name
      *
@@ -13,12 +13,12 @@ if (! function_exists('normalizedName')) {
     }
 }
 
-if (! function_exists('boolifyList')) {
+if (!function_exists('boolifyList')) {
     /**
      * Update Request item into boolean
      *
      * @param array $list
-     * @param                          $item
+     * @param $item
      */
     function boolifyList(&$list, $item)
     {
