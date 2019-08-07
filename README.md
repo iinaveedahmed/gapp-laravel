@@ -199,12 +199,11 @@ Return: modified REQUEST
 
 |                 Method                   	|                     Usage                      		|
 |-------------------------------------------|-------------------------------------------------------|
-|`iThrow(Exception, HTTP_CODE)`             |process and throw any exception with custom code		|
 |`UnauthorizedException(Exception)`			|process and throw **Unauthorized** exception (401)		|
 |`BadRequestException(Exception)`			|process and throw **Bad Request** exception (400)		|
 |`TooManyRequestException(Exception)`		|process and throw **Too Many Request** exception (429)	|
-|`NotFoundException(Exception)`				|process and throw **Not Found** exception (429)		|
-|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (429)	|
+|`NotFoundException(Exception)`				|process and throw **Not Found** exception (404)		|
+|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (500)	|
 
 **Example**
 Following exception with 
@@ -238,9 +237,9 @@ function validateMetaData(MetaData $metaData){
 	
 		// check if error is too many request
 		if($e->getCode === 433) {
-			TooManyRequestException($e); // will throw with code 429
+			TooManyRequestException('errorMessage'); // will throw with code 429
 		} else {
-			InternalServerException($e); // will throw with code 500
+			InternalServerException('errorMessage'); // will throw with code 500
 		}
 	}
 }
