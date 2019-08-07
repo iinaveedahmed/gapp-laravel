@@ -20,7 +20,7 @@ class IpaasServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // nothing here
+        require_once __DIR__ . '/../../autoload.php';
     }
 
     /**
@@ -30,11 +30,6 @@ class IpaasServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        /*
-         * Load helpers from Ipaas/Helper directory
-         */
-        require_once __DIR__ . '/Helper/include.php';
-
         /*
          * Add logging channel 'stackdriver'
          */
