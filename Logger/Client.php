@@ -114,4 +114,20 @@ class Client extends Base
         $value = $value ?? Str::uuid();
         return $this->prop($value, 'uuid');
     }
+
+    /**
+     * @return string
+     */
+    public function getClientKey(): string
+    {
+        return ilog()->dataSet['client_key'] ?? 'Unknown';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestId(): string
+    {
+        return ilog()->dataSet['request_id'] ?? 'Unknown';
+    }
 }
