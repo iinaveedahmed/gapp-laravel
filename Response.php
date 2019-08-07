@@ -66,8 +66,8 @@ class Response extends Controller
     public function sendResponse($data, $status = StatusCode::HTTP_OK)
     {
         $response = [
-            'meta' => $this->getMeta($status),
             'data' => $data,
+            'meta' => $this->getMeta($status),
         ];
 
         return response($response, $status, $this->getHeaders());
@@ -151,7 +151,7 @@ class Response extends Controller
         $meta = $this->meta;
         $meta['status'] = $statusCode;
         $meta['self'] = url(request()->path());
-        $meta['request_id'] = ilog()->dataSet['request_id'];
+        $meta['request_id'] = ilog()->getRequestId();
 
         return $meta;
     }
@@ -199,9 +199,9 @@ class Response extends Controller
 
         // response data
         $response = [
-            'meta' => $this->getMeta($status),
             'messages' => $message,
-            'errors' => $errors
+            'errors' => $errors,
+            'meta' => $this->getMeta($status),
         ];
 
         return response($response, $status, $this->getHeaders());
@@ -209,61 +209,46 @@ class Response extends Controller
 
     /**
      * Send validation/unprocessed entity error
-     * @param string $message
-     * @param array $errors
      * @return Response
      */
     public function errorValidation($message = 'Unprocessed Entity', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_UNPROCESSABLE_ENTITY, null, $errors);
     }
 
     /**
      * Send unauthorized error
-     * @param string $message
-     * @param array $errors
      * @return Response
      */
     public function errorUnauthorized($message = 'Unauthorized', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_UNAUTHORIZED, null, $errors);
     }
 
     /**
-     * Send unauthorized error
-     * @param string $message
-     * @param array $errors
+     * Send bad request error
      * @return Response
      */
     public function errorBadRequest($message = 'Bad Request', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_BAD_REQUEST, null, $errors);
     }
 
     /**
      * Send too many request error
-     * @param string $message
-     * @param array $errors
      * @return Response
      */
     public function errorTooManyRequest($message = 'Too Many Requests', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_TOO_MANY_REQUESTS, null, $errors);
     }
 
     /**
      * Send not found error
-     * @param string $message
-     * @param array $errors
      * @return Response
      */
     public function errorNotFound($message = 'Not Found', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_NOT_FOUND, null, $errors);
     }
 
@@ -271,22 +256,17 @@ class Response extends Controller
      * Send not implemented error
      * @return Response
      */
-    public function errorNotImplemented()
+    public function errorNotImplemented($message = 'Method not implemented')
     {
-        $message = 'Method not implemented';
-        Log::error('Method not implemented');
         return $this->sendError($message, StatusCode::HTTP_NOT_IMPLEMENTED);
     }
 
     /**
      * Send internal server error
-     * @param string $message
-     * @param array $errors
      * @return Response
      */
     public function errorInternalServer($message = 'Internal Server Error', $errors = [])
     {
-        Log::error($message, $errors);
         return $this->sendError($message, StatusCode::HTTP_INTERNAL_SERVER_ERROR, null, $errors);
     }
 }

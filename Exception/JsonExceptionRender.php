@@ -24,7 +24,7 @@ class JsonExceptionRender
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
                 'line' => $exception->getLine(),
-                'trace' => explode("\n", $exception->getTraceAsString()),
+                'trace' => explode(PHP_EOL, $exception->getTraceAsString()),
             ];
         }
 
