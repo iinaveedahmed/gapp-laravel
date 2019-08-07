@@ -7,7 +7,6 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\UnauthorizedException;
 
 /**
  * Middleware AuthAndLog
@@ -32,13 +31,13 @@ class AuthAndLog
 
         if ($this->isInvalidApiKey()) {
             Log::alert('Unauthorized request');
-            throw new UnauthorizedException('x-api-key mismatch');
+            UnauthorizedException('x-api-key mismatch');
         }
 
         // lock on app engine
         if (config('app.env') == 'production' && env('APP_ENGINE_ONLY') !== false) {
             ilog()->setType('default');
-            throw new UnauthorizedException('Only accepts request from app engine');
+            UnauthorizedException('Only accepts request from app engine');
         }
 
         return $next($request);
@@ -48,6 +47,7 @@ class AuthAndLog
      * @param Request $request
      * @param $apiKeyExists
      * @return bool
+     * @throws \Ipaas\Exception\UnauthorizedException
      */
     private function isInvalidApiKey(): bool
     {
@@ -59,7 +59,7 @@ class AuthAndLog
         try {
             $apiKeyExists = DB::table('auths')->whereApiKey($apiKey)->exists();
         } catch (Exception $e) {
-            throw new UnauthorizedException('Tha `auths` table is not created.');
+            UnauthorizedException('Tha `auths` table is not created.');
         }
 
         return !$apiKeyExists || (env('API_KEY') && $apiKey != env('API_KEY', 'development'));
