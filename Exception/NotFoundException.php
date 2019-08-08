@@ -9,7 +9,7 @@ use Throwable;
 class NotFoundException extends Exception
 {
     public function __construct(
-        string $message = 'Not found',
+        $message = 'Not found',
         int $code = Response::HTTP_NOT_FOUND,
         Throwable $previous = null
     ) {
@@ -18,6 +18,6 @@ class NotFoundException extends Exception
 
     public function render()
     {
-        return renderException($this);
+        return irenderException($this);
     }
 }

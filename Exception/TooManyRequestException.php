@@ -9,7 +9,7 @@ use Throwable;
 class TooManyRequestException extends Exception
 {
     public function __construct(
-        string $message = 'Too many requests',
+        $message = 'Too many requests',
         int $code = Response::HTTP_TOO_MANY_REQUESTS,
         Throwable $previous = null
     ) {
@@ -18,6 +18,6 @@ class TooManyRequestException extends Exception
 
     public function render()
     {
-        return renderException($this);
+        return irenderException($this);
     }
 }

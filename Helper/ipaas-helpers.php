@@ -41,22 +41,21 @@ if (!function_exists('iresponse')) {
 }
 
 if (!function_exists('irequest')) {
-
     /**
-     * @return \Ipaas\Request
+     * @return \Ipaas\Gapp\Request
      */
     function irequest()
     {
-        return new \Ipaas\Request(request());
+        return new \Ipaas\Gapp\Request(request());
     }
 }
 
-if (!function_exists('renderException')) {
+if (!function_exists('irenderException')) {
     /**
      * @param Exception $e
      * @return mixed
      */
-    function renderException(Exception $e)
+    function irenderException(Exception $e)
     {
         return iresponse()->sendError($e->getMessage(), $e->getCode());
     }

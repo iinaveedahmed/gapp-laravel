@@ -9,7 +9,7 @@ use Throwable;
 class BadRequestException extends Exception
 {
     public function __construct(
-        string $message = 'Invalid request',
+        $message = 'Invalid request',
         int $code = Response::HTTP_BAD_REQUEST,
         Throwable $previous = null
     ) {
@@ -18,6 +18,6 @@ class BadRequestException extends Exception
 
     public function render()
     {
-        return renderException($this);
+        return irenderException($this);
     }
 }

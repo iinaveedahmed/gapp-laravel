@@ -9,7 +9,7 @@ use Throwable;
 class UnauthorizedException extends Exception
 {
     public function __construct(
-        string $message = 'Unauthorized action',
+        $message = 'Unauthorized action',
         int $code = Response::HTTP_UNAUTHORIZED,
         Throwable $previous = null
     ) {
@@ -18,6 +18,6 @@ class UnauthorizedException extends Exception
 
     public function render()
     {
-        return renderException($this);
+        return irenderException($this);
     }
 }

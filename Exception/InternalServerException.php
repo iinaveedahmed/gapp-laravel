@@ -9,7 +9,7 @@ use Throwable;
 class InternalServerException extends Exception
 {
     public function __construct(
-        string $message = 'An internal server error has occurred',
+        $message = 'An internal server error has occurred',
         int $code = Response::HTTP_INTERNAL_SERVER_ERROR,
         Throwable $previous = null
     ) {
@@ -18,6 +18,6 @@ class InternalServerException extends Exception
 
     public function render()
     {
-        return renderException($this);
+        return irenderException($this);
     }
 }
