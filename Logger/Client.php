@@ -118,6 +118,14 @@ class Client extends Base
     /**
      * @return string
      */
+    public function getClientId(): string
+    {
+        return ilog()->dataSet['client_id'] ?? 'Unknown';
+    }
+
+    /**
+     * @return string
+     */
     public function getClientKey(): string
     {
         return ilog()->dataSet['client_key'] ?? 'Unknown';
