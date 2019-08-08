@@ -37,7 +37,7 @@ composer require ipaas/gapp-laravel
 ### ii. Register Provider
 Add provider class in `config/app.php` before **Application service providers**
 ```php
-Ipaas\IpaasServiceProvider::class,
+Ipaas\Gapp\IpaasServiceProvider::class,
 ```
   
 Make sure that the  
@@ -51,21 +51,22 @@ Helper to add context information to all log entries.
 > Once context is added to ilog it will append to all future logs entries
 > ilog refresh with each request and; have same life cycle as of request()
 
-`ilog()` is a helper method returning singleton class `IPaaS/Info/Client.php`
+`ilog()` is a helper method returning singleton class `Ipaas\Gapp\Logger\Client.php`
 To add context info just call `ilog()` and chain any method available.
 Following methods are available:
 
 
 |                 Method                     |              Usage              |
 |--------------------------------------------|---------------------------------|
-|`client (string)`                           |set client id/name               |
-|`key (string)`                              |set client key/token             |
-|`type (string)`                             |type of request                  |
+|`setClientId (string)`                           |set client id/name               |
+|`setClientKey (string)`                              |set client key/token             |
+|`setRequestId (string)`                              |set request id/token             |
+|`setType (string)`                             |type of request                  |
 |`prop ((string)value, (string)name)`        |any custom key and value         | 
-|`date ((string⎮Carbon)value, (string)name)` |any custom date key and value    |
-|`dateFrom (string⎮Carbon)`                  |sync/request date from           |
-|`dateTo (string⎮Carbon)`                    |sync/request date to             |
-|`uuid (string⎮null)`                        |universal unique identifier      |
+|`setDate ((string⎮Carbon)value, (string)name)` |any custom date key and value    |
+|`setDateFrom (string⎮Carbon)`                  |sync/request date from           |
+|`setDateTo (string⎮Carbon)`                    |sync/request date to             |
+|`setUuid (string⎮null)`                        |universal unique identifier      |
 |`toArray()`                                 |get all info as array            |
 
 
@@ -139,7 +140,7 @@ $request->dateTo                        // date to
 Request is resolved using `Ipass/Request` controller
 to use see the given example:
 ```php
-use Ipaas\Request;
+use Ipaas\Gapp\Request;
 use Ipass\Response;
 class Accounts extends Response;  
 {
@@ -261,16 +262,16 @@ return $this->header(['content-type' => 'application/json'])->sendResponse($data
 ```
 
 **AllErrors** 
-* `errorValidation()`
-* `errorUnauthorized()`
-* `errorBadRequest()`
-* `errorTooManyRequest()`
-* `errorNotFound()`
-* `errorNotImplemented()`
-* `errorInternalServer()`
+* `sendErrorUnprocessable()`
+* `sendErrorUnauthorized()`
+* `sendErrorBadRequest()`
+* `sendErrorTooManyRequest()`
+* `sendErrorNotFound()`
+* `sendErrorNotImplemented()`
+* `sendErrorInternalServer()`
 * Main: `sendError()`
 ```php
-return $this->errorNotImplemented();
+return $this->sendErrorNotImplemented();
 ```
 
 ## Other Helpers
