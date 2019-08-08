@@ -1,14 +1,14 @@
 <?php
 
-namespace Ipaas;
+namespace Ipaas\Gapp;
 
 use Exception;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Ipaas\Exception\GException;
-use Ipaas\Exception\JsonExceptionRender;
-use Ipaas\Logger\Client;
-use Ipaas\Middleware\AuthAndLog;
+use Ipaas\Gapp\Exception\GException;
+use Ipaas\Gapp\Exception\JsonExceptionRender;
+use Ipaas\Gapp\Logger\Client;
+use Ipaas\Gapp\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {

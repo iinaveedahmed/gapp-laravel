@@ -1,5 +1,5 @@
 <?php
-namespace Ipaas\Logger;
+namespace Ipaas\Gapp\Logger;
 
 use Google\Cloud\Logging\LoggingClient;
 use Monolog\Handler\PsrHandler;
@@ -7,7 +7,7 @@ use Monolog\Logger;
 
 /**
  * Class GLogger
- * @package Ipaas\Logger
+ * @package Ipaas\Gapp\Logger
  */
 class GLogger
 {

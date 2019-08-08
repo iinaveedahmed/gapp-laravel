@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipaas\Logger;
+namespace Ipaas\Gapp\Logger;
 
 use Carbon\Carbon;
 use Exception;
@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 /**
  * Class Client
- * @package Ipaas\Logger
+ * @package Ipaas\Gapp\Logger
  */
 class Client extends Base
 {

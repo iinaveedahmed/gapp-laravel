@@ -2,6 +2,6 @@
 return [
     'stackdriver' => [
         'driver' => 'custom',
-        'via' => Ipaas\Logger\GLogger::class,
+        'via' => Ipaas\Gapp\Logger\GLogger::class,
     ]
 ];

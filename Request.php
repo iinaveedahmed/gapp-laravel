@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipaas;
+namespace Ipaas\Gapp;
 
 use Illuminate\Http\Request as BaseRequest;
 use Illuminate\Support\Facades\Validator;

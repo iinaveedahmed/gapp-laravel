@@ -1,12 +1,12 @@
 <?php
-namespace Ipaas\Logger;
+namespace Ipaas\Gapp\Logger;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
  * Class Base
- * @package Ipaas\Logger
+ * @package Ipaas\Gapp\Logger
  */
 class Base
 {

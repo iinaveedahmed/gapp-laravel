@@ -1,5 +1,5 @@
 <?php
-namespace Ipaas\Exception;
+namespace Ipaas\Gapp\Exception;
 
 use Exception;
 use Illuminate\Validation\ValidationException;

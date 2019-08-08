@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipaas\Middleware;
+namespace Ipaas\Gapp\Middleware;
 
 use Closure;
 use Exception;
@@ -47,7 +47,7 @@ class AuthAndLog
      * @param Request $request
      * @param $apiKeyExists
      * @return bool
-     * @throws \Ipaas\Exception\UnauthorizedException
+     * @throws \Ipaas\Gapp\Exception\UnauthorizedException
      */
     private function isInvalidApiKey(): bool
     {
@@ -59,7 +59,7 @@ class AuthAndLog
         try {
             $apiKeyExists = DB::table('auths')->whereApiKey($apiKey)->exists();
         } catch (Exception $e) {
-            UnauthorizedException('Tha `auths` table is not created.');
+            UnauthorizedException('The `auths` table is not created.');
         }
 
         return !$apiKeyExists || (env('API_KEY') && $apiKey != env('API_KEY', 'development'));

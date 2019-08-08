@@ -1,6 +1,6 @@
 <?php
 
-namespace Ipaas\Exception;
+namespace Ipaas\Gapp\Exception;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
