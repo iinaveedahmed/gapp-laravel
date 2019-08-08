@@ -210,7 +210,7 @@ class Response extends Controller
      * Send validation/unprocessed entity error
      * @return Response
      */
-    public function errorValidation($message = 'Unprocessed Entity', $errors = [])
+    public function sendErrorUnprocessable($message = 'Unprocessed Entity', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_UNPROCESSABLE_ENTITY, null, $errors);
     }
@@ -219,7 +219,7 @@ class Response extends Controller
      * Send unauthorized error
      * @return Response
      */
-    public function errorUnauthorized($message = 'Unauthorized', $errors = [])
+    public function sendErrorUnauthorized($message = 'Unauthorized', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_UNAUTHORIZED, null, $errors);
     }
@@ -228,7 +228,7 @@ class Response extends Controller
      * Send bad request error
      * @return Response
      */
-    public function errorBadRequest($message = 'Bad Request', $errors = [])
+    public function sendErrorBadRequest($message = 'Bad Request', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_BAD_REQUEST, null, $errors);
     }
@@ -237,7 +237,7 @@ class Response extends Controller
      * Send too many request error
      * @return Response
      */
-    public function errorTooManyRequest($message = 'Too Many Requests', $errors = [])
+    public function sendErrorTooManyRequest($message = 'Too Many Requests', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_TOO_MANY_REQUESTS, null, $errors);
     }
@@ -246,7 +246,7 @@ class Response extends Controller
      * Send not found error
      * @return Response
      */
-    public function errorNotFound($message = 'Not Found', $errors = [])
+    public function sendErrorNotFound($message = 'Not Found', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_NOT_FOUND, null, $errors);
     }
@@ -255,7 +255,7 @@ class Response extends Controller
      * Send not implemented error
      * @return Response
      */
-    public function errorNotImplemented($message = 'Method not implemented')
+    public function sendErrorNotImplemented($message = 'Method not implemented')
     {
         return $this->sendError($message, StatusCode::HTTP_NOT_IMPLEMENTED);
     }
@@ -264,7 +264,7 @@ class Response extends Controller
      * Send internal server error
      * @return Response
      */
-    public function errorInternalServer($message = 'Internal Server Error', $errors = [])
+    public function sendErrorInternalServer($message = 'Internal Server Error', $errors = [])
     {
         return $this->sendError($message, StatusCode::HTTP_INTERNAL_SERVER_ERROR, null, $errors);
     }
