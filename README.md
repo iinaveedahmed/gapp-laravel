@@ -280,6 +280,11 @@ return $this->sendErrorNotImplemented();
 
 **Normalized Name**
 Replace ASCII space unicode with ` ` space.
+
+Input: ```te \n sting```
+
+Response: ```te sting```
+
 ```php
 // $name is unicode string
 Func: normalizedName(string $name)
@@ -288,6 +293,12 @@ Return: normalized string
 ```
 **Boolify List**
 Convert given string 'true/false' parameter to php boolean in provided array.
+
+Input: ```['true', 'false', 'TRUE', 'FALSE', true, false, TRUE, FALSE, 0, 1, '0', '1', '', ' test']```
+
+Response:
+```[true, false, true, false, true, false, true, false, false, true, false, true, false, true]```
+
 ```php
 // $list is haystack array
 // $item is needle name
