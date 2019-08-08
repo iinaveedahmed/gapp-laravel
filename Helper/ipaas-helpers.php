@@ -1,10 +1,9 @@
 <?php
 
 if (!function_exists('ilog')) {
-
     /**
      * @param null $key
-     * @return \Illuminate\Foundation\Application|\Ipaas\Logger\Client|mixed|ipaas-info
+     * @return \Illuminate\Foundation\Application|\Ipaas\Gapp\Logger\Client|mixed|ipaas-info
      */
     function ilog($key = null)
     {
@@ -13,15 +12,16 @@ if (!function_exists('ilog')) {
         }
 
         if (is_array($key)) {
-            return app('ipaas-info')->put($key);
+            if (count($key) === 1) {
+                return app('ipaas-info')->prop(array_values($key)[0], array_keys($key)[0]);
+            }
         }
 
-        return app('ipaas-info')->get($key);
+        return app('ipaas-info')->dataSet[$key];
     }
 }
 
 if (!function_exists('iresponse')) {
-
     /**
      * @param null $key
      * @return \Illuminate\Foundation\Application|mixed|ipaas-response
