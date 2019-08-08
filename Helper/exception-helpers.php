@@ -1,56 +1,82 @@
 <?php
 
+use Ipaas\Gapp\Exception\BadRequestException;
+use Ipaas\Gapp\Exception\InternalServerException;
+use Ipaas\Gapp\Exception\NotFoundException;
+use Ipaas\Gapp\Exception\TooManyRequestException;
+use Ipaas\Gapp\Exception\UnauthorizedException;
+
 if (!function_exists('UnauthorizedException')) {
     /**
      * @param null $message
-     * @throws \Ipaas\Exception\UnauthorizedException
+     * @throws UnauthorizedException
      */
     function UnauthorizedException($message = null)
     {
-        throw new \Ipaas\Exception\UnauthorizedException($message);
+        if ($message) {
+            throw new UnauthorizedException($message);
+        }
+
+        throw new UnauthorizedException;
     }
 }
 
 if (!function_exists('BadRequestException')) {
     /**
      * @param null $message
-     * @throws \Ipaas\Exception\BadRequestException
+     * @throws BadRequestException
      */
     function BadRequestException($message = null)
     {
-        throw new \Ipaas\Exception\BadRequestException($message);
+        if ($message) {
+            throw new BadRequestException($message);
+        }
+
+        throw new BadRequestException;
     }
 }
 
 if (!function_exists('TooManyRequestException')) {
     /**
      * @param null $message
-     * @throws \Ipaas\Exception\TooManyRequestException
+     * @throws TooManyRequestException
      */
     function TooManyRequestException($message = null)
     {
-        throw new \Ipaas\Exception\TooManyRequestException($message);
+        if ($message) {
+            throw new TooManyRequestException($message);
+        }
+
+        throw new TooManyRequestException;
     }
 }
 
 if (!function_exists('NotFoundException')) {
     /**
      * @param null $message
-     * @throws \Ipaas\Exception\NotFoundException
+     * @throws NotFoundException
      */
     function NotFoundException($message = null)
     {
-        throw new \Ipaas\Exception\NotFoundException($message);
+        if ($message) {
+            throw new NotFoundException($message);
+        }
+
+        throw new NotFoundException;
     }
 }
 
 if (!function_exists('InternalServerException')) {
     /**
      * @param null $message
-     * @throws \Ipaas\Exception\InternalServerException
+     * @throws InternalServerException
      */
     function InternalServerException($message = null)
     {
-        throw new \Ipaas\Exception\InternalServerException($message);
+        if ($message) {
+            throw new InternalServerException($message);
+        }
+
+        throw new InternalServerException;
     }
 }
