@@ -36,7 +36,7 @@ class ConverterTest extends TestCase
         }
 
         $this->assertEquals(
-            [true, false, true, false, true, false, TRUE, FALSE, false, true, false, true, false, true],
+            [true, false, true, false, true, false, true, false, false, true, false, true, false, true],
             $cases
         );
     }
