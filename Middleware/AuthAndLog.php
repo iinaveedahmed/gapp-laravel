@@ -62,7 +62,7 @@ class AuthAndLog
             UnauthorizedException('The `auths` table is not created.');
         }
 
-        return !$apiKeyExists || (env('API_KEY') && $apiKey != env('API_KEY', 'development'));
+        return !$apiKeyExists;
     }
 
     /**
