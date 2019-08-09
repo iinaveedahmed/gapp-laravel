@@ -121,9 +121,8 @@ function validateUserName(User $user){
 
 ### Validation
 By default this library try to validate request by checking headers:
-* x-api-key (set via .env)
-by default system will try to match header `x-api-key` with **ENV** `API_KEY` for validation
-_to disable remove **ENV** `API_KEY`_
+* x-api-key (set on the `auths` table)
+by default system will try to match the header `x-api-key` with the `auths` table.
 
 ### Logging
 By default library try to translate and log following details:
