@@ -51,8 +51,8 @@ class AuthAndLog
      */
     private function isInvalidApiKey(): bool
     {
-        $apiKey = ilog()->dataSet['client_key'] ?? null;
-        if (empty($apiKey)) {
+        $apiKey = ilog()->getClientKey();
+        if ($apiKey == 'Unknown') {
             return true;
         }
 
