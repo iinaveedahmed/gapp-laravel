@@ -122,7 +122,8 @@ function validateUserName(User $user){
 ### Validation
 By default this library try to validate request by checking headers:
 * x-api-key (set on the `auths` table)
-by default system will try to match the header `x-api-key` with the `auths` table.
+the system will try to match the header `x-api-key` with the `auths` table.
+_to enable, Add this line on your Route Middleware ```'AuthAndLog' => \Ipaas\Gapp\Middleware\AuthAndLog::class,``` and then call the middleware on your desired route ```Route::get('foo', FooController@bar)->middleware('AuthAndLog')```
 
 ### Logging
 By default library try to translate and log following details:

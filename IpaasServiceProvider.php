@@ -3,12 +3,10 @@
 namespace Ipaas\Gapp;
 
 use Exception;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 use Ipaas\Gapp\Exception\GException;
 use Ipaas\Gapp\Exception\JsonExceptionRender;
 use Ipaas\Gapp\Logger\Client;
-use Ipaas\Gapp\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -63,8 +61,5 @@ class IpaasServiceProvider extends ServiceProvider
         app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
             return JsonExceptionRender::render($exception);
         });
-
-        $kernel = $this->app->make(Kernel::class);
-        $kernel->pushMiddleware(AuthAndLog::class);
     }
 }
