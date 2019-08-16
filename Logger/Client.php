@@ -13,6 +13,39 @@ use Illuminate\Support\Str;
 class Client extends Base
 {
     /**
+     * @param $key
+     * @return |null
+     */
+    public function __get($key)
+    {
+        return ilog()->dataSet[$key] ?? null;
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientId(): string
+    {
+        return ilog()->dataSet['client_id'] ?? 'Unknown';
+    }
+
+    /**
+     * @return string
+     */
+    public function getClientKey(): string
+    {
+        return ilog()->dataSet['client_key'] ?? 'Unknown';
+    }
+
+    /**
+     * @return string
+     */
+    public function getRequestId(): string
+    {
+        return ilog()->dataSet['request_id'] ?? 'Unknown';
+    }
+
+    /**
      * @param mixed $value
      * @param string|null $name
      * @return Client
@@ -113,29 +146,5 @@ class Client extends Base
     {
         $value = $value ?? Str::uuid();
         return $this->setData($value, 'uuid');
-    }
-
-    /**
-     * @return string
-     */
-    public function getClientId(): string
-    {
-        return ilog()->dataSet['client_id'] ?? 'Unknown';
-    }
-
-    /**
-     * @return string
-     */
-    public function getClientKey(): string
-    {
-        return ilog()->dataSet['client_key'] ?? 'Unknown';
-    }
-
-    /**
-     * @return string
-     */
-    public function getRequestId(): string
-    {
-        return ilog()->dataSet['request_id'] ?? 'Unknown';
     }
 }
