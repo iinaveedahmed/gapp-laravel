@@ -18,7 +18,7 @@ class IpaasServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        require_once __DIR__ . '/../../autoload.php';
+        //
     }
 
     /**
@@ -58,8 +58,10 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
+        $this->app->bind('Dingo\Api\Exception\Handler', function (Exception $exception) {
             return JsonExceptionRender::render($exception);
         });
+
+        app('router')->aliasMiddleware('AuthAndLog', \Ipaas\Gapp\Middleware\AuthAndLog::class);
     }
 }
