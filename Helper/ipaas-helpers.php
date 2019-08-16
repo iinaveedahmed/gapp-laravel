@@ -11,10 +11,8 @@ if (!function_exists('ilog')) {
             return app('ipaas-info');
         }
 
-        if (is_array($key)) {
-            if (count($key) === 1) {
-                return app('ipaas-info')->prop(array_values($key)[0], array_keys($key)[0]);
-            }
+        if (is_array($key) && count($key) === 1) {
+            return app('ipaas-info')->prop(array_values($key)[0], array_keys($key)[0]);
         }
 
         return app('ipaas-info')->dataSet[$key];
