@@ -33,12 +33,6 @@ ipaas/gapp-laravel: ~1.1.0
 ```bash
 composer require ipaas/gapp-laravel
 ```
-
-### ii. Register Provider
-Add provider class in `config/app.php` before **Application service providers**
-```php
-Ipaas\Gapp\IpaasServiceProvider::class,
-```
   
 Make sure that the  
  **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
@@ -122,8 +116,8 @@ function validateUserName(User $user){
 ### Validation
 By default this library try to validate request by checking headers:
 * x-api-key (set on the `auths` table)
-the system will try to match the header `x-api-key` with the `auths` table.
-_to enable, Add this line on your Route Middleware ```'AuthAndLog' => \Ipaas\Gapp\Middleware\AuthAndLog::class,``` and then call the middleware on your desired route ```Route::get('foo', FooController@bar)->middleware('AuthAndLog')```
+the system will try to match the header `x-api-key` with the `auths` table. 
+_To enable_, just add the middleware `AuthAndLog` on your desirable route ```Route::get('foo', FooController@bar)->middleware('AuthAndLog')```
 
 ### Logging
 By default library try to translate and log following details:
@@ -195,59 +189,9 @@ Func: requestify(string $item, mixed $value)
 Return: modified REQUEST
 ```
 
-## Exceptions
->These helper function can be call directly
-
-|                 Method                   	|                     Usage                      		|
-|-------------------------------------------|-------------------------------------------------------|
-|`UnauthorizedException(Exception)`			|process and throw **Unauthorized** exception (401)		|
-|`BadRequestException(Exception)`			|process and throw **Bad Request** exception (400)		|
-|`TooManyRequestException(Exception)`		|process and throw **Too Many Request** exception (429)	|
-|`NotFoundException(Exception)`				|process and throw **Not Found** exception (404)		|
-|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (500)	|
-
-**Example**
-Following exception with 
-```php
-/* ------ Class C ------- */
-
-/**
-* Validate information
-* @param MetaData $metaData 'A laravel model'
-* @return boolean
-* @throws Exception
-*/
-function validateMetaData(MetaData $metaData){
-	
-	iLog()
-	->data($info) // add complete model to context
-	->setType('simple meta validation') // add type context
-
-	if ($metaData->method == 'advance'){
-		// context override
-		iLog()->setType('advance meta validation');
-	}
-	
-	// lets log event info
-	Log::info('Validating meta data');
-	
-	// validating
-	try {
-		return CronClient::get($metaData);
-	} catch (Exception $e) {
-	
-		// check if error is too many request
-		if($e->getCode === 433) {
-			TooManyRequestException('errorMessage'); // will throw with code 429
-		} else {
-			InternalServerException('errorMessage'); // will throw with code 500
-		}
-	}
-}
-```
 ## Response
 > Response helper `iresponse`
-or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.php` 
+or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.php`, with that helper you can access sendError() method too, making an exception easier.
 
 **Set Meta**
 Chain-able function to set response meta data
@@ -261,22 +205,9 @@ Chain-able function to set response header data
 return $this->header(['content-type' => 'application/json'])->sendResponse($data);
 ```
 
-**AllErrors** 
-* `sendErrorUnprocessable()`
-* `sendErrorUnauthorized()`
-* `sendErrorBadRequest()`
-* `sendErrorTooManyRequest()`
-* `sendErrorNotFound()`
-* `sendErrorNotImplemented()`
-* `sendErrorInternalServer()`
-* Main: `sendError()`
-```php
-return $this->sendErrorNotImplemented();
-```
-
 ## Other Helpers
 ### Converter
-> Ipaas/Helper/Converter
+> Ipaas/Helper/Converter-Helpers
 
 **Normalized Name**
 Replace ASCII space unicode with ` ` space.
