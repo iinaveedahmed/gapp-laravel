@@ -31,11 +31,11 @@ ipaas/gapp-laravel: ~1.1.0
 **OR;** by running
 
 ```bash
-composer require ipaas/gapp-laravel
+composer require ipaas/gapp-laravel // considering v2+
 ```
   
 Make sure that the  
- **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
+ **ENV:** LOG_CHANNEL is set to `stack-driver`; and  
  **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
 
 ### ii. Migration and Artisan Command
@@ -247,3 +247,30 @@ Return: modified list
 
 ## Note
 _ps. google/cloud package is required to run application on google app engine flex environment_
+
+## Troubleshooting - Upgrade v1.* to v2.*
+- ilog()->data() was changed to ilog()->appendData();
+- iresponse() method was removed, use Ipaas\Gapp\Response() instead;
+- you do not need to instance the provider `Ipaas\IpaasServiceProvider::class` anymore, it is now automatically injected by composer;
+- all the ilog() setters were changed too:
+    - client is now setClientId;
+    - key is now setClientKey;
+    - type is now setType;
+    - dateFrom is now setDateFrom;
+    - dateTo is now setDateTo;
+    - uuid is now setUuid;
+- all the exception helpers were removed:
+    - iThrow;
+    - UnauthorizedException;
+    - BadRequestException;
+    - TooManyRequestException;
+    - NotFoundException;
+    - InternalServerException;
+- all the response helpers were removed:
+    - errorValidation;
+    - errorUnauthorized;
+    - errorBadRequest;
+    - errorTooManyRequest;
+    - errorNotFound;
+    - errorNotImplemented;
+    - errorInternalServer;
