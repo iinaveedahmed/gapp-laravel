@@ -4,6 +4,7 @@ namespace Ipaas\Gapp;
 
 use Exception;
 use Illuminate\Support\ServiceProvider;
+use Ipaas\Gapp\Command\CreatePartnerApp;
 use Ipaas\Gapp\Exception\GException;
 use Ipaas\Gapp\Exception\JsonExceptionRender;
 use Ipaas\Gapp\Logger\Client;
@@ -19,7 +20,11 @@ class IpaasServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        $this->loadMigrationsFrom(__DIR__ . '/Database/Migration');
+
+        $this->commands([
+            CreatePartnerApp::class,
+        ]);
     }
 
     /**
@@ -55,8 +60,8 @@ class IpaasServiceProvider extends ServiceProvider
         $this->app->bind(
             'Dingo\Api\Exception\Handler',
             function (Exception $exception) {
-            return JsonExceptionRender::render($exception);
-        });
+                return JsonExceptionRender::render($exception);
+            });
 
         app('router')->aliasMiddleware('partner', AuthAndLog::class);
     }
