@@ -3,7 +3,7 @@ namespace Ipaas\Gapp\Exception;
 
 use Exception;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 class JsonExceptionRender
 {

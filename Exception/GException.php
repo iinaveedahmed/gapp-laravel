@@ -7,7 +7,7 @@ use Illuminate\Auth\AuthenticationException;
 use Google\Cloud\ErrorReporting\Bootstrap;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 class GException extends ExceptionHandler
 {
@@ -17,12 +17,7 @@ class GException extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        // AuthenticationException::class,
-        // AuthorizationException::class,
-        // HttpException::class,
         ModelNotFoundException::class,
-        // TokenMismatchException::class,
-        // ValidationException::class,
     ];
 
     /**
@@ -48,7 +43,7 @@ class GException extends ExceptionHandler
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Exception $exception
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Http\Response
      * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function render($request, Exception $exception)
@@ -56,10 +51,7 @@ class GException extends ExceptionHandler
         $errors = null;
         $parentMessage = $exception->getMessage();
 
-        if (
-            $exception->getPrevious() instanceof Exception &&
-            strpos($exception->getFile(), 'Helper/Exception.php') >= 0
-        ) {
+        if ($exception->getPrevious() instanceof Exception) {
             $exception = $exception->getPrevious();
         }
 
@@ -84,7 +76,7 @@ class GException extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_BAD_REQUEST);
+            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_UNAUTHORIZED);
         }
 
         return redirect()->guest(route('login'));

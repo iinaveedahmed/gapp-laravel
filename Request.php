@@ -5,7 +5,7 @@ namespace Ipaas\Gapp;
 use Illuminate\Http\Request as BaseRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Http\Response;
 
 /**
  * Class Request
