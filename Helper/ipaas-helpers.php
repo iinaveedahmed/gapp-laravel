@@ -49,14 +49,3 @@ if (!function_exists('irequest')) {
         return new \Ipaas\Gapp\Request(request());
     }
 }
-
-if (!function_exists('irenderException')) {
-    /**
-     * @param Exception $e
-     * @return mixed
-     */
-    function irenderException(Exception $e)
-    {
-        return iresponse()->sendError($e->getMessage(), $e->getCode());
-    }
-}
