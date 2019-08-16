@@ -5,6 +5,7 @@ namespace Ipaas\Gapp\Middleware;
 use Closure;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -18,10 +19,8 @@ use Illuminate\Support\Facades\Log;
 class AuthAndLog
 {
     /**
-     * Handle an incoming request.
-     *
      * @param Request $request
-     * @param \Closure $next
+     * @param Closure $next
      * @return mixed
      * @throws Exception
      */
@@ -30,24 +29,16 @@ class AuthAndLog
         $this->setILogFields($request);
 
         if ($this->isInvalidApiKey()) {
-            Log::alert('Unauthorized request');
-            UnauthorizedException('x-api-key mismatch');
-        }
-
-        // lock on app engine
-        if (config('app.env') == 'production' && env('APP_ENGINE_ONLY') !== false) {
             ilog()->setType('default');
-            UnauthorizedException('Only accepts request from app engine');
+            Log::alert('Unauthorized request');
+            abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid x-api-key');
         }
 
         return $next($request);
     }
 
     /**
-     * @param Request $request
-     * @param $apiKeyExists
      * @return bool
-     * @throws \Ipaas\Gapp\Exception\UnauthorizedException
      */
     private function isInvalidApiKey(): bool
     {
@@ -59,7 +50,7 @@ class AuthAndLog
         try {
             $apiKeyExists = DB::table('auths')->whereApiKey($apiKey)->exists();
         } catch (Exception $e) {
-            UnauthorizedException('The `auths` table is not created.');
+            abort(Response::HTTP_UNAUTHORIZED, 'The `auths` table is not created');
         }
 
         return !$apiKeyExists;
