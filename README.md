@@ -38,6 +38,13 @@ Make sure that the
  **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
  **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
 
+### ii. Migration and Artisan Command
+If you are using the version 2.0 or later, you will have access to the migration and artisan command:
+
+```php artisan migrate``` command will create a new `partner_apps` table in your application, which will be used to verify the `X-Api-Key` when passing the middleware `partner`.
+
+```php artisan create-partner-app {provider}``` command will create a new row in your new `partner_apps` table with a provider name as optional argument.
+
 # API  Documentation
 ## Log-info (ilog)
 Helper to add context information to all log entries.
@@ -115,15 +122,15 @@ function validateUserName(User $user){
 
 ### Validation
 By default this library try to validate request by checking headers:
-* x-api-key (set on the `auths` table)
-the system will try to match the header `x-api-key` with the `auths` table. 
-_To enable_, just add the middleware `AuthAndLog` on your desirable route ```Route::get('foo', FooController@bar)->middleware('AuthAndLog')```
+* X-Api-Key (set on the `partner_apps` table)
+the system will try to match the header `X-Api-Key` with the `partner_apps` table. 
+_To enable_, just add the middleware `partner` on your desirable route ```Route::get('foo', FooController@bar)->middleware('partner')```
 
 ### Logging
 By default library try to translate and log following details:
 ```php
 $request->header('Authorization')       // Authorization value from header
-$request->header('x-api-key')           // Client ID from header
+$request->header('X-Api-Key')           // Client ID from header
 $request->header('Amaka-Request-ID')    // Amaka Request ID from header
 $request->uuid                          // request uuid
 $request->dateFrom                      // date from
