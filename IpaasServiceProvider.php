@@ -12,7 +12,6 @@ use Ipaas\Gapp\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap services.
      *
@@ -22,9 +21,11 @@ class IpaasServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/Database/Migration');
 
-        $this->commands([
-            CreatePartnerApp::class,
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CreatePartnerApp::class,
+            ]);
+        }
     }
 
     /**
@@ -61,7 +62,8 @@ class IpaasServiceProvider extends ServiceProvider
             'Dingo\Api\Exception\Handler',
             function (Exception $exception) {
                 return JsonExceptionRender::render($exception);
-            });
+            }
+        );
 
         app('router')->aliasMiddleware('partner', AuthAndLog::class);
     }
