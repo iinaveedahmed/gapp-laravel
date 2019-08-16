@@ -3,11 +3,10 @@
 namespace Ipaas\Gapp\Tests\Helpers;
 
 use Carbon\Carbon;
+use Illuminate\Http\Response as StatusCode;
 use Illuminate\Support\Str;
 use Ipaas\Gapp\Logger\Client;
-use Ipaas\Gapp\Response;
 use Ipaas\Gapp\Tests\TestCase;
-use Illuminate\Http\Response as StatusCode;
 
 class IpaasTest extends TestCase
 {
@@ -15,12 +14,8 @@ class IpaasTest extends TestCase
     {
         parent::setUp();
 
-        app()->singleton('ipaas-info', function () {
+        app()->singleton('logger-context', function () {
             return new Client();
-        });
-
-        app()->singleton('ipaas-response', function () {
-            return new Response();
         });
     }
 
@@ -47,7 +42,7 @@ class IpaasTest extends TestCase
 
         $this->assertEquals(ilog()->getClientId(), 'Unknown');
         ilog(['client_id' => $case['client_id']]);
-        $this->assertEquals(ilog('client_id'), $case['client_id']);
+        $this->assertEquals(ilog()->client_id, $case['client_id']);
 
         $this->assertEquals(ilog()->getClientKey(), 'Unknown');
         ilog()->setClientKey($case['client_key']);
@@ -58,22 +53,22 @@ class IpaasTest extends TestCase
         $this->assertEquals(ilog()->getRequestId(), $case['request_id']);
 
         ilog()->setType($case['type']);
-        $this->assertEquals(ilog('type'), $case['type']);
+        $this->assertEquals(ilog()->type, $case['type']);
 
         ilog()->setDateFrom();
-        $this->assertNotNull(ilog('date_from'));
+        $this->assertNotNull(ilog()->date_from);
         ilog()->setDateFrom($case['date_from']);
-        $this->assertEquals(ilog('date_from'), $case['date_from']);
+        $this->assertEquals(ilog()->date_from, $case['date_from']);
 
         ilog()->setDateTo();
-        $this->assertNotNull(ilog('date_to'));
+        $this->assertNotNull(ilog()->date_to);
         ilog()->setDateTo($case['date_to']);
-        $this->assertEquals(ilog('date_to'), $case['date_to']);
+        $this->assertEquals(ilog()->date_to, $case['date_to']);
 
         ilog()->setUuid();
-        $this->assertNotNull(ilog('uuid'));
+        $this->assertNotNull(ilog()->uuid);
         ilog()->setUuid($case['uuid']);
-        $this->assertEquals(ilog('uuid'), $case['uuid']);
+        $this->assertEquals(ilog()->uuid, $case['uuid']);
 
         $this->assertEquals($case, ilog()->toArray());
     }
@@ -83,11 +78,10 @@ class IpaasTest extends TestCase
      */
     public function itTestsIResponseHelper()
     {
-        $this->assertTrue(iresponse() instanceof Response);
-
-        iresponse()->setHeaders(['Testing-Header' => true]);
-        iresponse()->setMeta(['Testing-Meta' => true]);
-        $response = iresponse()->sendResponse('Testing Response');
+        $iResponse = new \Ipaas\Gapp\Response();
+        $iResponse->setHeaders(['Testing-Header' => true]);
+        $iResponse->setMeta(['Testing-Meta' => true]);
+        $response = $iResponse->sendResponse('Testing Response');
         $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
 
         $responseContent = $response->getOriginalContent();
@@ -98,9 +92,9 @@ class IpaasTest extends TestCase
         $this->assertEquals('http://localhost', $responseContent['meta']['self']);
 
         ilog()->setRequestId(10);
-        iresponse()->setHeaders(['Testing-Header' => false]);
-        iresponse()->setMeta(['Testing-Meta' => false]);
-        $response = iresponse()->sendResponse('Testing a New Response');
+        $iResponse->setHeaders(['Testing-Header' => false]);
+        $iResponse->setMeta(['Testing-Meta' => false]);
+        $response = $iResponse->sendResponse('Testing a New Response');
         $responseContent = $response->getOriginalContent();
 
         $this->assertFalse($response->headers->get('testing-header'));
@@ -114,41 +108,41 @@ class IpaasTest extends TestCase
      */
     public function itTestsResponseErrors()
     {
-        $this->assertTrue(iresponse() instanceof Response);
-        $response = iresponse()->sendError('Sending error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
+        $iResponse = new \Ipaas\Gapp\Response();
+        $response = $iResponse->sendError('Sending error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
         $this->assertEquals(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
 
-        $response = iresponse()->sendError('Unprocessed Entity', StatusCode::HTTP_UNPROCESSABLE_ENTITY);
+        $response = $iResponse->sendError('Unprocessed Entity', StatusCode::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertEquals(StatusCode::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
         $this->assertEquals('Unprocessed Entity', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Unauthorized', StatusCode::HTTP_UNAUTHORIZED);
+        $response = $iResponse->sendError('Unauthorized', StatusCode::HTTP_UNAUTHORIZED);
         $this->assertEquals(StatusCode::HTTP_UNAUTHORIZED, $response->getStatusCode());
         $this->assertEquals('Unauthorized', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Bad Request', StatusCode::HTTP_BAD_REQUEST);
+        $response = $iResponse->sendError('Bad Request', StatusCode::HTTP_BAD_REQUEST);
         $this->assertEquals(StatusCode::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Bad Request', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Too Many Requests', StatusCode::HTTP_TOO_MANY_REQUESTS);
+        $response = $iResponse->sendError('Too Many Requests', StatusCode::HTTP_TOO_MANY_REQUESTS);
         $this->assertEquals(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
         $this->assertEquals('Too Many Requests', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Not Found', StatusCode::HTTP_NOT_FOUND);
+        $response = $iResponse->sendError('Not Found', StatusCode::HTTP_NOT_FOUND);
         $this->assertEquals(StatusCode::HTTP_NOT_FOUND, $response->getStatusCode());
         $this->assertEquals('Not Found', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Method not implemented', StatusCode::HTTP_NOT_IMPLEMENTED);
+        $response = $iResponse->sendError('Method not implemented', StatusCode::HTTP_NOT_IMPLEMENTED);
         $this->assertEquals(StatusCode::HTTP_NOT_IMPLEMENTED, $response->getStatusCode());
         $this->assertEquals('Method not implemented', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendError('Internal Server Error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
+        $response = $iResponse->sendError('Internal Server Error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
         $this->assertEquals(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         $this->assertEquals('Internal Server Error', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
