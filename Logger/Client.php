@@ -13,13 +13,13 @@ use Illuminate\Support\Str;
 class Client extends Base
 {
     /**
-     * @param string $value
-     * @param $name
+     * @param mixed $value
+     * @param string|null $name
      * @return Client
      */
-    public function prop(string $value, $name): Client
+    public function setData($value, $name = null): Client
     {
-        parent::data($value, $name);
+        parent::appendData($value, $name);
         return $this;
     }
 
@@ -30,7 +30,7 @@ class Client extends Base
     public function setClientId(string $client = null): Client
     {
         $value = $client ?? 'Unknown';
-        return $this->prop($value, 'client_id');
+        return $this->setData($value, 'client_id');
     }
 
     /**
@@ -40,7 +40,7 @@ class Client extends Base
     public function setClientKey(string $value = null): Client
     {
         $value = $value ?? 'Unknown';
-        return $this->prop($value, 'client_key');
+        return $this->setData($value, 'client_key');
     }
 
     /**
@@ -50,7 +50,7 @@ class Client extends Base
     public function setRequestId(string $value = null): Client
     {
         $value = $value ?? 'Unknown';
-        return $this->prop($value, 'request_id');
+        return $this->setData($value, 'request_id');
     }
 
     /**
@@ -59,7 +59,7 @@ class Client extends Base
      */
     public function setType(string $value): Client
     {
-        return $this->prop($value, 'type');
+        return $this->setData($value, 'type');
     }
 
     /**
@@ -80,7 +80,7 @@ class Client extends Base
                 throw $e;
             }
         }
-        return $this->prop($value->format('c'), $name);
+        return $this->setData($value->format('c'), $name);
     }
 
     /**
@@ -112,7 +112,7 @@ class Client extends Base
     public function setUuid(string $value = null): Client
     {
         $value = $value ?? Str::uuid();
-        return $this->prop($value, 'uuid');
+        return $this->setData($value, 'uuid');
     }
 
     /**

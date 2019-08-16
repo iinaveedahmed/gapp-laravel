@@ -1,6 +1,6 @@
 <?php
 return [
-    'stackdriver' => [
+    'stack-driver' => [
         'driver' => 'custom',
         'via' => Ipaas\Gapp\Logger\GLogger::class,
     ]

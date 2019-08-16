@@ -28,7 +28,7 @@ class JsonExceptionRender
             ];
         }
 
-        $response = iresponse();
+        $response = new \Ipaas\Gapp\Response();
         if (method_exists($exception, 'getHeaders')) {
             $response->setHeaders($exception->getHeaders() ?? []);
         }

@@ -18,8 +18,8 @@
   },
   "autoload": {
     "files": [
-      "Helper/Ipaas-Helpers.php",
-      "Helper/Converter-Helpers.php"
+      "Helper/LoggerHelper.php",
+      "Helper/ConverterHelper.php"
     ],
     "psr-4": {
       "Ipaas\\Gapp\\": "."

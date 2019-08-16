@@ -52,16 +52,16 @@ Following methods are available:
 
 |                 Method                     |              Usage              |
 |--------------------------------------------|---------------------------------|
-|`setClientId (string)`                           |set client id/name               |
-|`setClientKey (string)`                              |set client key/token             |
-|`setRequestId (string)`                              |set request id/token             |
+|`setClientId (string)`                         |set client id/name               |
+|`setClientKey (string)`                        |set client key/token             |
+|`setRequestId (string)`                        |set request id/token             |
 |`setType (string)`                             |type of request                  |
-|`prop ((string)value, (string)name)`        |any custom key and value         | 
+|`prop ((string)value, (string)name)`           |any custom key and value         | 
 |`setDate ((string⎮Carbon)value, (string)name)` |any custom date key and value    |
 |`setDateFrom (string⎮Carbon)`                  |sync/request date from           |
 |`setDateTo (string⎮Carbon)`                    |sync/request date to             |
 |`setUuid (string⎮null)`                        |universal unique identifier      |
-|`toArray()`                                 |get all info as array            |
+|`toArray()`                                    |get all info as array            |
 
 
 > `iLog([data-set])` can be use to re-init* log data. 

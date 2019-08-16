@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Ipaas\Gapp\Exception\GException;
 use Ipaas\Gapp\Exception\JsonExceptionRender;
 use Ipaas\Gapp\Logger\Client;
+use Ipaas\Gapp\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -29,22 +30,15 @@ class IpaasServiceProvider extends ServiceProvider
     public function register()
     {
         /*
-         * Add logging channel 'stackdriver'
+         * Add logging channel 'stack-driver'
          */
         $this->mergeConfigFrom(__DIR__ . '/Logger/config.php', 'logging.channels');
 
         /*
          * Init singleton ipaas-info with Ipaas/Info/Client
          */
-        $this->app->singleton('ipaas-info', function () {
+        $this->app->singleton('logger-context', function () {
             return new Client();
-        });
-
-        /*
-        * Init singleton ipaas-info with Ipaas/Response
-        */
-        $this->app->singleton('ipaas-response', function () {
-            return new Response();
         });
 
         /*
@@ -58,10 +52,12 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        $this->app->bind('Dingo\Api\Exception\Handler', function (Exception $exception) {
+        $this->app->bind(
+            'Dingo\Api\Exception\Handler',
+            function (Exception $exception) {
             return JsonExceptionRender::render($exception);
         });
 
-        app('router')->aliasMiddleware('AuthAndLog', \Ipaas\Gapp\Middleware\AuthAndLog::class);
+        app('router')->aliasMiddleware('partner', AuthAndLog::class);
     }
 }

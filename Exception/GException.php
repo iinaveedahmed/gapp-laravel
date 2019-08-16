@@ -32,7 +32,20 @@ class GException extends ExceptionHandler
     public function report(Exception $exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
-            Bootstrap::exceptionHandler($exception);
+            $message = sprintf('PHP Notice: %s', (string)$exception);
+            if ($logger = Bootstrap::$psrLogger) {
+                $service = $logger->getMetadataProvider()->serviceId();
+                $version = $logger->getMetadataProvider()->versionId();
+                $logger->error($message, [
+                    'serviceContext' => [
+                        'service' => $service,
+                        'version' => $version,
+                    ],
+                    'context' => ilog()->toArray()
+                ]);
+            } else {
+                fwrite(STDERR, $message . PHP_EOL);
+            }
         }
 
         parent::report($exception);

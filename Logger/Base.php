@@ -1,4 +1,5 @@
 <?php
+
 namespace Ipaas\Gapp\Logger;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,7 @@ class Base
     public $dataSet = [];
 
     /**
-     * @param array $dataSet
+     * @param  array  $dataSet
      * @return $this
      */
     public function __construct(array $dataSet = [])
@@ -32,11 +33,11 @@ class Base
     }
 
     /**
-     * @param string|array|Collection|Model $data
-     * @param string $name
+     * @param  Collection|Model|mixed  $data
+     * @param  string  $name
      * @return Base
      */
-    public function data($data, $name = null)
+    public function appendData($data, $name = null)
     {
         if (is_a($data, Collection::class)) {
             $data = $data->take(1000)->toArray();
@@ -49,10 +50,11 @@ class Base
 
         if ($name) {
             $this->dataSet[$name] = $data;
+        } elseif (is_array($data)) {
+            $this->dataSet += $data;
         } else {
             $this->dataSet[] = $data;
         }
-
         return $this;
     }
 }

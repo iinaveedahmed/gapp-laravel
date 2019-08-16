@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 /**
  * Middleware AuthAndLog
  * This will provide ability to verify IPAAS header params and initiate basic log context.
- * header check: x-api-key, X-Appengine, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
+ * header check: x-api-key, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
  * log context: type, request->client, request->uuid, request->dateFrom, request->dateTo and auth header for client key.
  * @package Ipaas
  */
@@ -48,7 +48,7 @@ class AuthAndLog
         }
 
         try {
-            $apiKeyExists = DB::table('auths')->whereApiKey($apiKey)->exists();
+            $apiKeyExists = DB::table('auths')->where('api_key', $apiKey)->exists();
         } catch (Exception $e) {
             abort(Response::HTTP_UNAUTHORIZED, 'The `auths` table is not created');
         }
@@ -62,10 +62,9 @@ class AuthAndLog
      */
     private function setILogFields(Request $request): void
     {
-        /** @noinspection PhpUndefinedFieldInspection */
         ilog()
             ->setClientId($request->header('Authorization'))
-            ->setClientKey($request->header('x-api-key'))
+            ->setClientKey($request->header('X-Api-Key'))
             ->setRequestId($request->header('Amaka-Request-ID'))
             ->setUuid($request->uuid)
             ->setDateFrom($request->dateFrom)
