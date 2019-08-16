@@ -249,10 +249,11 @@ Return: modified list
 _ps. google/cloud package is required to run application on google app engine flex environment_
 
 ## Troubleshooting - Upgrade v1.* to v2.*
-- ilog()->data() was changed to ilog()->appendData();
-- iresponse() method was removed, use Ipaas\Gapp\Response() instead;
+- `ilog()->data()` was changed to `ilog()->appendData()`;
+- `iresponse()` method was removed, use `Ipaas\Gapp\Response()` instead;
 - you do not need to instance the provider `Ipaas\IpaasServiceProvider::class` anymore, it is now automatically injected by composer;
-- all the ilog() setters were changed too:
+- `stackdriver` logging channel was changed to `stack-driver`
+- all the `ilog()` setters were changed too:
     - client is now setClientId;
     - key is now setClientKey;
     - type is now setType;
