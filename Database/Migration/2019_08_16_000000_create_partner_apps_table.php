@@ -13,13 +13,13 @@ class CreatePartnerAppsTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('partner_apps', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->string('provider', '45')->nullable();
+            $table->string('api_key', '45')->unique();
+            $table->dateTime('expire_date');
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('created_at')->default(now());
         });
     }
 
@@ -30,6 +30,6 @@ class CreatePartnerAppsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('partner_apps');
     }
 }
