@@ -16,7 +16,6 @@ class GLogger
     public function __invoke(array $config)
     {
         $logName = $config['logName'] ?? 'app';
-//        $psrLogger = LoggingClient::psrBatchLogger($logName);
         $psrLogger = Bootstrap::$psrLogger;
         $handler = new PsrHandler($psrLogger);
 
