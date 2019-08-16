@@ -13,7 +13,7 @@ class CreatePartnerApp extends Command
      *
      * @var string
      */
-    protected $signature = 'create-partner-app';
+    protected $signature = 'create-partner-app {provider?}';
 
     /**
      * The console command description.
@@ -39,8 +39,16 @@ class CreatePartnerApp extends Command
      */
     public function handle(): void
     {
+        $provider = $this->argument('provider') ?? 'Amaka';
+        $partnerApp = PartnerApp::where('provider', $provider)->first();
+
+        if (!empty($partnerApp)) {
+            $partnerApp->is_active = false;
+            $partnerApp->save();
+        }
+
         PartnerApp::insert([
-            'provider' => 'Amaka',
+            'provider' => $provider,
             'api_key' => Str::uuid(),
             'expire_date' => now()->addYears(10),
         ]);
