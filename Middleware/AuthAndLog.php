@@ -6,13 +6,13 @@ use Closure;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Ipaas\Gapp\Model\PartnerApp;
 
 /**
  * Middleware AuthAndLog
  * This will provide ability to verify IPAAS header params and initiate basic log context.
- * header check: x-api-key, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
+ * header check: X-Api-Key, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
  * log context: type, request->client, request->uuid, request->dateFrom, request->dateTo and auth header for client key.
  * @package Ipaas
  */
@@ -31,7 +31,7 @@ class AuthAndLog
         if ($this->isInvalidApiKey()) {
             ilog()->setType('default');
             Log::alert('Unauthorized request');
-            abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid x-api-key');
+            abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid X-Api-Key');
         }
 
         return $next($request);
@@ -48,9 +48,12 @@ class AuthAndLog
         }
 
         try {
-            $apiKeyExists = DB::table('auths')->where('api_key', $apiKey)->exists();
+            $apiKeyExists = PartnerApp::where('api_key', $apiKey)->where('is_active', true)->exists();
         } catch (Exception $e) {
-            abort(Response::HTTP_UNAUTHORIZED, 'The `auths` table is not created');
+            abort(
+                Response::HTTP_UNAUTHORIZED, 'The `partner_apps` table is not created, 
+                try running the `php artisan migrate` command'
+            );
         }
 
         return !$apiKeyExists;
