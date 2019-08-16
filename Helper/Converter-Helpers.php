@@ -25,9 +25,7 @@ if (!function_exists('boolifyList')) {
      */
     function boolifyList(&$list, $item)
     {
-        if (strtolower($list[$item]) == 'true') {
-            $bool = true;
-        } elseif (strtolower($list[$item]) == 'false') {
+        if (strtolower($list[$item]) == 'false') {
             $bool = false;
         } else {
             $bool = (bool)$list[$item];
