@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 use Ipaas\Gapp\Logger\Client;
 use Ipaas\Gapp\Response;
 use Ipaas\Gapp\Tests\TestCase;
-use Symfony\Component\HttpFoundation\Response as StatusCode;
+use Illuminate\Http\Response as StatusCode;
 
 class IpaasTest extends TestCase
 {
@@ -118,37 +118,37 @@ class IpaasTest extends TestCase
         $response = iresponse()->sendError('Sending error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
         $this->assertEquals(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
 
-        $response = iresponse()->sendErrorUnprocessable();
+        $response = iresponse()->sendError('Unprocessed Entity', StatusCode::HTTP_UNPROCESSABLE_ENTITY);
         $this->assertEquals(StatusCode::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
         $this->assertEquals('Unprocessed Entity', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorUnauthorized();
+        $response = iresponse()->sendError('Unauthorized', StatusCode::HTTP_UNAUTHORIZED);
         $this->assertEquals(StatusCode::HTTP_UNAUTHORIZED, $response->getStatusCode());
         $this->assertEquals('Unauthorized', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorBadRequest();
+        $response = iresponse()->sendError('Bad Request', StatusCode::HTTP_BAD_REQUEST);
         $this->assertEquals(StatusCode::HTTP_BAD_REQUEST, $response->getStatusCode());
         $this->assertEquals('Bad Request', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorTooManyRequest();
+        $response = iresponse()->sendError('Too Many Requests', StatusCode::HTTP_TOO_MANY_REQUESTS);
         $this->assertEquals(StatusCode::HTTP_TOO_MANY_REQUESTS, $response->getStatusCode());
         $this->assertEquals('Too Many Requests', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorNotFound();
+        $response = iresponse()->sendError('Not Found', StatusCode::HTTP_NOT_FOUND);
         $this->assertEquals(StatusCode::HTTP_NOT_FOUND, $response->getStatusCode());
         $this->assertEquals('Not Found', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorNotImplemented();
+        $response = iresponse()->sendError('Method not implemented', StatusCode::HTTP_NOT_IMPLEMENTED);
         $this->assertEquals(StatusCode::HTTP_NOT_IMPLEMENTED, $response->getStatusCode());
         $this->assertEquals('Method not implemented', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
 
-        $response = iresponse()->sendErrorInternalServer();
+        $response = iresponse()->sendError('Internal Server Error', StatusCode::HTTP_INTERNAL_SERVER_ERROR);
         $this->assertEquals(StatusCode::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
         $this->assertEquals('Internal Server Error', $this->getResponseResult($response)->messages);
         $this->assertNotNull($this->getResponseResult($response)->meta->code);
