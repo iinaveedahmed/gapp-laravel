@@ -50,10 +50,9 @@ class AuthAndLog
         try {
             $apiKeyExists = PartnerApp::where('api_key', $apiKey)->where('is_active', true)->exists();
         } catch (Exception $e) {
-            abort(
-                Response::HTTP_UNAUTHORIZED, 'The `partner_apps` table is not created, 
-                try running the `php artisan migrate` command'
-            );
+            $errorMessage = 'The `partner_apps` table is not created, ' .
+                'try running the `php artisan migrate` command';
+            abort(Response::HTTP_UNAUTHORIZED, $errorMessage);
         }
 
         return !$apiKeyExists;
