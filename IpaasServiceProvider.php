@@ -1,18 +1,17 @@
 <?php
 
-namespace Ipaas;
+namespace Ipaas\Gapp;
 
 use Exception;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Ipaas\Exception\GException;
-use Ipaas\Exception\JsonExceptionRender;
-use Ipaas\Logger\Client;
-use Ipaas\Middleware\AuthAndLog;
+use Ipaas\Gapp\Command\CreatePartnerApp;
+use Ipaas\Gapp\Exception\GException;
+use Ipaas\Gapp\Exception\JsonExceptionRender;
+use Ipaas\Gapp\Logger\Client;
+use Ipaas\Gapp\Middleware\AuthAndLog;
 
 class IpaasServiceProvider extends ServiceProvider
 {
-
     /**
      * Bootstrap services.
      *
@@ -20,7 +19,13 @@ class IpaasServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // nothing here
+        $this->loadMigrationsFrom(__DIR__ . '/Database/Migration');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                CreatePartnerApp::class,
+            ]);
+        }
     }
 
     /**
@@ -31,27 +36,15 @@ class IpaasServiceProvider extends ServiceProvider
     public function register()
     {
         /*
-         * Load helpers from Ipaas/Helper directory
-         */
-        require_once __DIR__ . '/Helper/include.php';
-
-        /*
-         * Add logging channel 'stackdriver'
+         * Add logging channel 'stack-driver'
          */
         $this->mergeConfigFrom(__DIR__ . '/Logger/config.php', 'logging.channels');
 
         /*
          * Init singleton ipaas-info with Ipaas/Info/Client
          */
-        $this->app->singleton('ipaas-info', function () {
+        $this->app->singleton('logger-context', function () {
             return new Client();
-        });
-
-        /*
-        * Init singleton ipaas-info with Ipaas/Response
-        */
-        $this->app->singleton('ipaas-response', function () {
-            return new Response();
         });
 
         /*
@@ -65,11 +58,13 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
-            return JsonExceptionRender::render($exception);
-        });
+        $this->app->bind(
+            'Dingo\Api\Exception\Handler',
+            function (Exception $exception) {
+                return JsonExceptionRender::render($exception);
+            }
+        );
 
-        $kernel = $this->app->make(Kernel::class);
-        $kernel->pushMiddleware(AuthAndLog::class);
+        app('router')->aliasMiddleware('partner', AuthAndLog::class);
     }
 }

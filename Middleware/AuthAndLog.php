@@ -1,58 +1,76 @@
 <?php
 
-namespace Ipaas\Middleware;
+namespace Ipaas\Gapp\Middleware;
 
-use Carbon\Carbon;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\UnauthorizedException;
+use Ipaas\Gapp\Model\PartnerApp;
 
 /**
  * Middleware AuthAndLog
  * This will provide ability to verify IPAAS header params and initiate basic log context.
- * header check: x-api-key, X-Appengine, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
+ * header check: X-Api-Key, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
  * log context: type, request->client, request->uuid, request->dateFrom, request->dateTo and auth header for client key.
  * @package Ipaas
  */
 class AuthAndLog
 {
     /**
-     * Handle an incoming request.
-     *
-     * @param  Request $request
-     * @param  \Closure $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(Request $request, Closure $next)
     {
-        // log information
-        /** @noinspection PhpUndefinedFieldInspection */
-        ilog()
-            ->client($request->client ?: 'Unknown')
-            ->uuid($request->uuid ?: null)
-            ->key($request->header('Authorization') ?: 'TEST')
-            ->dateFrom($request->dateFrom ?: Carbon::now())
-            ->dateTo($request->dateTo ?: Carbon::now());
+        $this->setILogFields($request);
 
-        // auth api key
-        if (env('API_KEY')) {
-            if (!$request->has('x-api-key')
-                && $request['x-api-key'] != env('API_KEY', 'development')) {
-                Log::alert('Unauthorized request');
-                throw new UnauthorizedException("x-api-key mismatch");
-            }
-        }
-
-        // lock on app engine
-        if (config('app.env') == 'production'
-            && env('APP_ENGINE_ONLY') !== false
-            && !$request->header('X-Appengine-Inbound-Appid')) {
-            ilog()->type('default');
-            throw new UnauthorizedException("Only accepts request from app engine");
+        if ($this->isInvalidApiKey()) {
+            ilog()->setType('default');
+            Log::alert('Unauthorized request');
+            abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid X-Api-Key');
         }
 
         return $next($request);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isInvalidApiKey(): bool
+    {
+        $apiKey = ilog()->getClientKey();
+        if ($apiKey == 'Unknown') {
+            return true;
+        }
+
+        try {
+            $apiKeyExists = PartnerApp::where('api_key', $apiKey)->where('is_active', true)->exists();
+        } catch (Exception $e) {
+            abort(
+                Response::HTTP_UNAUTHORIZED, 'The `partner_apps` table is not created, 
+                try running the `php artisan migrate` command'
+            );
+        }
+
+        return !$apiKeyExists;
+    }
+
+    /**
+     * @param Request $request
+     * @throws Exception
+     */
+    private function setILogFields(Request $request): void
+    {
+        ilog()
+            ->setClientId($request->header('Authorization'))
+            ->setClientKey($request->header('X-Api-Key'))
+            ->setRequestId($request->header('Amaka-Request-ID'))
+            ->setUuid($request->uuid)
+            ->setDateFrom($request->dateFrom)
+            ->setDateTo($request->dateTo);
     }
 }

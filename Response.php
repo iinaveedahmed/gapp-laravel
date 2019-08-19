@@ -1,14 +1,13 @@
 <?php
 
-namespace Ipaas;
+namespace Ipaas\Gapp;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
-use Illuminate\Http\Response as LResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Http\Response as StatusCode;
 
 class Response extends Controller
 {
@@ -52,7 +51,7 @@ class Response extends Controller
      * )
      * @param $data
      * @param $status
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|StatusCode
      */
 
     /**
@@ -63,11 +62,11 @@ class Response extends Controller
      *
      * @return Response
      */
-    public function sendResponse($data, $status = LResponse::HTTP_OK)
+    public function sendResponse($data, $status = StatusCode::HTTP_OK)
     {
         $response = [
-            'meta' => $this->getMeta($status),
             'data' => $data,
+            'meta' => $this->getMeta($status),
         ];
 
         return response($response, $status, $this->getHeaders());
@@ -99,7 +98,11 @@ class Response extends Controller
      * @SWG\Definition(
      *   definition="MetaModel",
      *   type="object",
-     *   required={"status", "self"},
+     *   required={"request_id", "status", "self"},
+     *   @SWG\Property(
+     *       property="request_id",
+     *       type="string"
+     *   ),
      *   @SWG\Property(
      *        property="status",
      *        type="integer"
@@ -144,10 +147,10 @@ class Response extends Controller
      */
     private function getMeta($statusCode)
     {
-        $request = request();
         $meta = $this->meta;
         $meta['status'] = $statusCode;
-        $meta['self'] = url($request->path());
+        $meta['self'] = url(request()->path());
+        $meta['request_id'] = ilog()->getRequestId();
 
         return $meta;
     }
@@ -182,7 +185,7 @@ class Response extends Controller
         // set meta data for error
         $meta = [
             'message' => $message,
-            'code' => $code ?: Str::uuid(),
+            'code' => $code ?? Str::uuid(),
         ];
 
         // debug trace if debug is active
@@ -195,94 +198,11 @@ class Response extends Controller
 
         // response data
         $response = [
-            'meta' => $this->getMeta($status),
             'messages' => $message,
-            'errors' => $errors
+            'errors' => $errors,
+            'meta' => $this->getMeta($status),
         ];
 
         return response($response, $status, $this->getHeaders());
-    }
-
-    /**
-     * Send validation/unprocessed entity error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorValidation($message = 'Unprocessed Entity', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 422, null, $errors);
-    }
-
-    /**
-     * Send unauthorized error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorUnauthorized($message = 'Unauthorized', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 401, null, $errors);
-    }
-
-    /**
-     * Send unauthorized error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorBadRequest($message = 'Bad Request', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 400, null, $errors);
-    }
-
-    /**
-     * Send too many request error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorTooManyRequest($message = 'Too Many Requests', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 429, null, $errors);
-    }
-
-    /**
-     * Send not found error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorNotFound($message = 'Not Found', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 400, null, $errors);
-    }
-
-    /**
-     * Send not implemented error
-     * @return Response
-     */
-    public function errorNotImplemented()
-    {
-        $message = 'Method not implemented';
-        Log::error('Method not implemented');
-        return $this->sendError($message, 501);
-    }
-
-    /**
-     * Send internal server error
-     * @param string $message
-     * @param array $errors
-     * @return Response
-     */
-    public function errorInternalServer($message = 'Internal Server Error', $errors = [])
-    {
-        Log::error($message, $errors);
-        return $this->sendError($message, 500, null, $errors);
     }
 }

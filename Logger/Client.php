@@ -1,5 +1,6 @@
 <?php
-namespace Ipaas\Logger;
+
+namespace Ipaas\Gapp\Logger;
 
 use Carbon\Carbon;
 use Exception;
@@ -7,46 +8,91 @@ use Illuminate\Support\Str;
 
 /**
  * Class Client
- * @package Ipaas\Logger
+ * @package Ipaas\Gapp\Logger
  */
 class Client extends Base
 {
     /**
-     * @param string
-     * @return Client
+     * @param $key
+     * @return |null
      */
-    public function client(string $client): Client
+    public function __get($key)
     {
-        return $this->prop($client, 'client-id');
+        return ilog()->dataSet[$key] ?? null;
     }
 
     /**
-     * @param string
-     * @return Client
+     * @return string
      */
-    public function key(string $value): Client
+    public function getClientId(): string
     {
-        return $this->prop($value, 'client-key');
+        return ilog()->dataSet['client_id'] ?? 'Unknown';
     }
 
     /**
-     * @param string
-     * @return Client
+     * @return string
      */
-    public function type(string $value): Client
+    public function getClientKey(): string
     {
-        return $this->prop($value, 'type');
+        return ilog()->dataSet['client_key'] ?? 'Unknown';
     }
 
     /**
-     * @param string $value
-     * @param $name
+     * @return string
+     */
+    public function getRequestId(): string
+    {
+        return ilog()->dataSet['request_id'] ?? 'Unknown';
+    }
+
+    /**
+     * @param mixed $value
+     * @param string|null $name
      * @return Client
      */
-    public function prop(string $value, $name): Client
+    public function setData($value, $name = null): Client
     {
-        parent::data($value, $name);
+        parent::appendData($value, $name);
         return $this;
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setClientId(string $client = null): Client
+    {
+        $value = $client ?? 'Unknown';
+        return $this->setData($value, 'client_id');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setClientKey(string $value = null): Client
+    {
+        $value = $value ?? 'Unknown';
+        return $this->setData($value, 'client_key');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setRequestId(string $value = null): Client
+    {
+        $value = $value ?? 'Unknown';
+        return $this->setData($value, 'request_id');
+    }
+
+    /**
+     * @param string
+     * @return Client
+     */
+    public function setType(string $value): Client
+    {
+        return $this->setData($value, 'type');
     }
 
     /**
@@ -55,7 +101,7 @@ class Client extends Base
      * @return Client
      * @throws Exception
      */
-    public function date($value, string $name): Client
+    public function setDate($value, string $name): Client
     {
         /**
          * @type Carbon $value
@@ -67,7 +113,7 @@ class Client extends Base
                 throw $e;
             }
         }
-        return $this->prop($value->format('c'), $name);
+        return $this->setData($value->format('c'), $name);
     }
 
     /**
@@ -75,9 +121,10 @@ class Client extends Base
      * @return Client
      * @throws Exception
      */
-    public function dateFrom($value): Client
+    public function setDateFrom($value = null): Client
     {
-        return $this->date($value, 'date-from');
+        $value = $value ?? Carbon::now();
+        return $this->setDate($value, 'date_from');
     }
 
     /**
@@ -85,17 +132,19 @@ class Client extends Base
      * @return Client
      * @throws Exception
      */
-    public function dateTo($value): Client
+    public function setDateTo($value = null): Client
     {
-        return $this->date($value, 'date-to');
+        $value = $value ?? Carbon::now();
+        return $this->setDate($value, 'date_to');
     }
 
     /**
      * @param string
      * @return Client
      */
-    public function uuid(string $value = null): Client
+    public function setUuid(string $value = null): Client
     {
-        return $this->prop($value ? $value : Str::uuid(), 'uuid');
+        $value = $value ?? Str::uuid();
+        return $this->setData($value, 'uuid');
     }
 }

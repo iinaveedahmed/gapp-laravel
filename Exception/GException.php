@@ -1,12 +1,13 @@
 <?php
 
-namespace Ipaas\Exception;
+namespace Ipaas\Gapp\Exception;
 
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Google\Cloud\ErrorReporting\Bootstrap;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Response;
 
 class GException extends ExceptionHandler
 {
@@ -16,12 +17,7 @@ class GException extends ExceptionHandler
      * @var array
      */
     protected $dontReport = [
-        // AuthenticationException::class,
-        // AuthorizationException::class,
-        // HttpException::class,
         ModelNotFoundException::class,
-        // TokenMismatchException::class,
-        // ValidationException::class,
     ];
 
     /**
@@ -36,7 +32,20 @@ class GException extends ExceptionHandler
     public function report(Exception $exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
-            Bootstrap::exceptionHandler($exception);
+            $message = sprintf('PHP Notice: %s', (string)$exception);
+            if ($logger = Bootstrap::$psrLogger) {
+                $service = $logger->getMetadataProvider()->serviceId();
+                $version = $logger->getMetadataProvider()->versionId();
+                $logger->error($message, [
+                    'serviceContext' => [
+                        'service' => $service,
+                        'version' => $version,
+                    ],
+                    'context' => ilog()->toArray()
+                ]);
+            } else {
+                fwrite(STDERR, $message . PHP_EOL);
+            }
         }
 
         parent::report($exception);
@@ -47,16 +56,15 @@ class GException extends ExceptionHandler
      *
      * @param  \Illuminate\Http\Request $request
      * @param  \Exception $exception
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return \Illuminate\Http\Response
      * @throws \Illuminate\Container\EntryNotFoundException
      */
     public function render($request, Exception $exception)
     {
         $errors = null;
         $parentMessage = $exception->getMessage();
-        if ($exception->getPrevious() instanceof Exception
-            && strpos($exception->getFile(), 'Helper/Exception.php') >= 0
-        ) {
+
+        if ($exception->getPrevious() instanceof Exception) {
             $exception = $exception->getPrevious();
         }
 
@@ -80,9 +88,8 @@ class GException extends ExceptionHandler
      */
     protected function unauthenticated($request, AuthenticationException $exception)
     {
-
         if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], 401);
+            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_UNAUTHORIZED);
         }
 
         return redirect()->guest(route('login'));
