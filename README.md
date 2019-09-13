@@ -1,5 +1,3 @@
-
-
 # iPaaS package for Laravel
 This package includes
 * Driver for Google stack logging
@@ -35,11 +33,14 @@ composer require ipaas/gapp-laravel // considering v2+
 ```
   
 Make sure that the  
+ **ENV:** GAPP_SECURE is set to `true`; and  
  **ENV:** LOG_CHANNEL is set to `stack-driver`; and  
  **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
 
 ### ii. Migration and Artisan Command
 If you are using the version 2.0 or later, you will have access to the migration and artisan command:
+
+```php artisan vendor:publish --tag=gapp``` command will push the middleware to the application, and furthermore using `GAPP_SECURE` set to `true`, the security will be applied.
 
 ```php artisan migrate``` command will create a new `partner_apps` table in your application, which will be used to verify the `X-Api-Key` when passing the middleware `partner`.
 
@@ -131,7 +132,7 @@ By default library try to translate and log following details:
 ```php
 $request->header('Authorization')       // Authorization value from header
 $request->header('X-Api-Key')           // Client ID from header
-$request->header('Amaka-Request-ID')    // Amaka Request ID from header
+$request->header('Gapp-Request-ID')    // Gapp Request ID from header
 $request->uuid                          // request uuid
 $request->dateFrom                      // date from
 $request->dateTo                        // date to

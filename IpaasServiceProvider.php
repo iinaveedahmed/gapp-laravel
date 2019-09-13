@@ -29,8 +29,8 @@ class IpaasServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/config.php' => config_path('amaka.php'),
-        ]);
+            __DIR__.'/config.php' => config_path('gapp.php'),
+        ], 'gapp');
     }
 
     /**

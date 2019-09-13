@@ -29,7 +29,7 @@ class AuthAndLog
     {
         $this->setILogFields($request);
 
-        if (config('amaka.secure') && $this->isInvalidApiKey()) {
+        if (config('gapp.secure') && $this->isInvalidApiKey()) {
             ilog()->setType('default');
             Log::alert('Unauthorized request');
             abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid X-Api-Key');
@@ -71,7 +71,7 @@ class AuthAndLog
         ilog()
             ->setClientId($request->header('Authorization'))
             ->setClientKey($request->header('X-Api-Key'))
-            ->setRequestId($request->header('Amaka-Request-ID'))
+            ->setRequestId($request->header('Gapp-Request-ID'))
             ->setUuid($request->get('uuid'))
             ->setDateFrom($request->get('dateFrom'))
             ->setDateTo($request->get('dateTo'));

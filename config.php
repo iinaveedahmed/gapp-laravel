@@ -1,4 +1,4 @@
 <?php
 return [
-    'secure' => env('AMAKA_SECURE', 'false')
+    'secure' => env('GAPP_SECURE', 'false')
 ];
