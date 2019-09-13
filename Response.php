@@ -2,12 +2,13 @@
 
 namespace Ipaas\Gapp;
 
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Str;
-use Illuminate\Http\Response as StatusCode;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class Response extends Controller
 {
@@ -51,7 +52,7 @@ class Response extends Controller
      * )
      * @param $data
      * @param $status
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|StatusCode
+     * @return ResponseFactory|IlluminateResponse
      */
 
     /**
@@ -60,9 +61,9 @@ class Response extends Controller
      * @param     $data
      * @param int $status
      *
-     * @return Response
+     * @return IlluminateResponse
      */
-    public function sendResponse($data, $status = StatusCode::HTTP_OK)
+    public function sendResponse($data, $status = IlluminateResponse::HTTP_OK)
     {
         $response = [
             'data' => $data,
@@ -178,7 +179,7 @@ class Response extends Controller
      * @param $errors
      * @param $trace
      *
-     * @return Response
+     * @return IlluminateResponse
      */
     public function sendError($message, $status, $code = null, $errors = null, $trace = null)
     {

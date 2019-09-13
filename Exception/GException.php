@@ -3,22 +3,13 @@
 namespace Ipaas\Gapp\Exception;
 
 use Exception;
-use Illuminate\Auth\AuthenticationException;
 use Google\Cloud\ErrorReporting\Bootstrap;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class GException extends ExceptionHandler
 {
-    /**
-     * A list of the exception types that should not be reported.
-     *
-     * @var array
-     */
-    protected $dontReport = [
-        ModelNotFoundException::class,
-    ];
 
     /**
      * Report or log an exception.
@@ -33,16 +24,26 @@ class GException extends ExceptionHandler
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
             $message = sprintf('PHP Notice: %s', (string)$exception);
+
+            try { // try context from helper in-case helper is not loaded
+                $context = ilog()->toArray();
+            } catch (Exception $exception) {
+                $context = "Unable to get context";
+            }
+
             if ($logger = Bootstrap::$psrLogger) {
                 $service = $logger->getMetadataProvider()->serviceId();
                 $version = $logger->getMetadataProvider()->versionId();
-                $logger->error($message, [
-                    'serviceContext' => [
-                        'service' => $service,
-                        'version' => $version,
-                    ],
-                    'context' => ilog()->toArray()
-                ]);
+                $logger->error(
+                    $message,
+                    [
+                        'serviceContext' => [
+                            'service' => $service,
+                            'version' => $version,
+                        ],
+                        'context' => $context
+                    ]
+                );
             } else {
                 fwrite(STDERR, $message . PHP_EOL);
             }
@@ -54,14 +55,12 @@ class GException extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  \Exception $exception
-     * @return \Illuminate\Http\Response
-     * @throws \Illuminate\Container\EntryNotFoundException
+     * @param  Request  $request
+     * @param  Exception  $exception
+     * @return Response
      */
     public function render($request, Exception $exception)
     {
-        $errors = null;
         $parentMessage = $exception->getMessage();
 
         if ($exception->getPrevious() instanceof Exception) {
@@ -77,21 +76,5 @@ class GException extends ExceptionHandler
         }
 
         return parent::render($request, $exception);
-    }
-
-    /**
-     * Convert an authentication exception into an unauthenticated response.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\Auth\AuthenticationException  $exception
-     * @return \Illuminate\Http\Response
-     */
-    protected function unauthenticated($request, AuthenticationException $exception)
-    {
-        if ($request->expectsJson()) {
-            return response()->json(['error' => 'Unauthenticated.'], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return redirect()->guest(route('login'));
     }
 }

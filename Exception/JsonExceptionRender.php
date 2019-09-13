@@ -4,6 +4,7 @@ namespace Ipaas\Gapp\Exception;
 use Exception;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Response;
+use Ipaas\Gapp\Response as GappResponse;
 
 class JsonExceptionRender
 {
@@ -28,7 +29,7 @@ class JsonExceptionRender
             ];
         }
 
-        $response = new \Ipaas\Gapp\Response();
+        $response = new GappResponse();
         if (method_exists($exception, 'getHeaders')) {
             $response->setHeaders($exception->getHeaders() ?? []);
         }

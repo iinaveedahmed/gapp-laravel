@@ -3,6 +3,7 @@
 namespace Ipaas\Gapp;
 
 use Exception;
+use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Ipaas\Gapp\Command\CreatePartnerApp;
 use Ipaas\Gapp\Exception\GException;
@@ -26,6 +27,10 @@ class IpaasServiceProvider extends ServiceProvider
                 CreatePartnerApp::class,
             ]);
         }
+
+        $this->publishes([
+            __DIR__.'/config.php' => config_path('amaka.php'),
+        ]);
     }
 
     /**
@@ -65,6 +70,14 @@ class IpaasServiceProvider extends ServiceProvider
             }
         );
 
-        app('router')->aliasMiddleware('partner', AuthAndLog::class);
+        /**
+         * Append middleware
+         */
+
+        /** @var Router $router */
+        $router = app('router');
+
+        $router->aliasMiddleware('partner', AuthAndLog::class);
+        $router->pushMiddlewareToGroup('api', AuthAndLog::class);
     }
 }

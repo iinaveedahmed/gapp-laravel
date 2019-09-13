@@ -3,6 +3,7 @@
 namespace Ipaas\Gapp\Tests\Helpers;
 
 use Carbon\Carbon;
+use Illuminate\Http\Response;
 use Illuminate\Http\Response as StatusCode;
 use Illuminate\Support\Str;
 use Ipaas\Gapp\Logger\Client;
@@ -81,11 +82,13 @@ class IpaasTest extends TestCase
         $iResponse = new \Ipaas\Gapp\Response();
         $iResponse->setHeaders(['Testing-Header' => true]);
         $iResponse->setMeta(['Testing-Meta' => true]);
+        /** @var Response $response */
         $response = $iResponse->sendResponse('Testing Response');
         $this->assertEquals(StatusCode::HTTP_OK, $response->getStatusCode());
 
         $responseContent = $response->getOriginalContent();
-        $this->assertTrue($response->headers->get('testing-header'));
+        //dd($response->headers);
+        $this->assertTrue($response->headers->get('testing-header') == 1);
         $this->assertTrue($responseContent['meta']['Testing-Meta']);
         $this->assertEquals('Testing Response', $responseContent['data']);
         $this->assertEquals('Unknown', $responseContent['meta']['request_id']);
@@ -97,7 +100,7 @@ class IpaasTest extends TestCase
         $response = $iResponse->sendResponse('Testing a New Response');
         $responseContent = $response->getOriginalContent();
 
-        $this->assertFalse($response->headers->get('testing-header'));
+        $this->assertFalse($response->headers->get('testing-header') == 1);
         $this->assertFalse($responseContent['meta']['Testing-Meta']);
         $this->assertEquals('Testing a New Response', $responseContent['data']);
         $this->assertEquals(10, $responseContent['meta']['request_id']);

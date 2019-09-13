@@ -4,6 +4,7 @@ namespace Ipaas\Gapp\Middleware;
 
 use Closure;
 use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -12,7 +13,7 @@ use Ipaas\Gapp\Model\PartnerApp;
 /**
  * Middleware AuthAndLog
  * This will provide ability to verify IPAAS header params and initiate basic log context.
- * header check: X-Api-Key, X-AppEngine-Cron. Any un-matched request throw 401 UnauthorizedException.
+ * header check: X-Api-Key. Any un-matched request throw 401 UnauthorizedException.
  * log context: type, request->client, request->uuid, request->dateFrom, request->dateTo and auth header for client key.
  * @package Ipaas
  */
@@ -28,7 +29,7 @@ class AuthAndLog
     {
         $this->setILogFields($request);
 
-        if ($this->isInvalidApiKey()) {
+        if (config('amaka.secure') && $this->isInvalidApiKey()) {
             ilog()->setType('default');
             Log::alert('Unauthorized request');
             abort(Response::HTTP_UNAUTHORIZED, 'Only accepts request from app engine with a valid X-Api-Key');
@@ -48,14 +49,17 @@ class AuthAndLog
         }
 
         try {
+            /** @noinspection PhpUndefinedMethodInspection */
             $apiKeyExists = PartnerApp::where('api_key', $apiKey)->where('is_active', true)->exists();
-        } catch (Exception $e) {
+            return !$apiKeyExists;
+        } catch (ModelNotFoundException $e) {
+            report($e);
             $errorMessage = 'The `partner_apps` table is not created, ' .
                 'try running the `php artisan migrate` command';
             abort(Response::HTTP_UNAUTHORIZED, $errorMessage);
         }
 
-        return !$apiKeyExists;
+        return true;
     }
 
     /**
@@ -68,8 +72,8 @@ class AuthAndLog
             ->setClientId($request->header('Authorization'))
             ->setClientKey($request->header('X-Api-Key'))
             ->setRequestId($request->header('Amaka-Request-ID'))
-            ->setUuid($request->uuid)
-            ->setDateFrom($request->dateFrom)
-            ->setDateTo($request->dateTo);
+            ->setUuid($request->get('uuid'))
+            ->setDateFrom($request->get('dateFrom'))
+            ->setDateTo($request->get('dateTo'));
     }
 }

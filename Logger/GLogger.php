@@ -2,8 +2,10 @@
 
 namespace Ipaas\Gapp\Logger;
 
+use Closure;
+use Exception;
 use Google\Cloud\ErrorReporting\Bootstrap;
-use Google\Cloud\Logging\LoggingClient;
+use Google\Cloud\Logging\PsrLogger;
 use Monolog\Handler\PsrHandler;
 use Monolog\Logger;
 
@@ -19,25 +21,37 @@ class GLogger
         $psrLogger = Bootstrap::$psrLogger;
         $handler = new PsrHandler($psrLogger);
 
-        $service = $psrLogger->getMetadataProvider()->serviceId();
-        $version = $psrLogger->getMetadataProvider()->versionId();
-
         $logger = new Logger(
             $logName,
             [$handler],
-            [
-                function ($record) use ($service, $version) {
-                    $record['context'] += [
-                        'serviceContext' => [
-                            'service' => $service,
-                            'version' => $version,
-                        ],
-                        'context' => ilog()->toArray()
-                    ];
-                    return $record;
-                }
-            ]
+            $this->getProcessor($psrLogger)
         );
         return $logger;
+    }
+
+    /**
+     * @param  PsrLogger  $psrLogger
+     * @return Closure[]
+     */
+    public function getProcessor(PsrLogger $psrLogger)
+    {
+        return [
+            function ($record) use ($psrLogger) {
+
+                try { // try context from helper in-case helper is not loaded
+                    $context = ilog()->toArray();
+                } catch (Exception $exception) {
+                    $context = "Unable to get context";
+                }
+
+                return $record['context'] += [
+                    'serviceContext' => [
+                        'service' => $psrLogger->getMetadataProvider()->serviceId(),
+                        'version' => $psrLogger->getMetadataProvider()->versionId(),
+                    ],
+                    'context' => $context
+                ];
+            }
+        ];
     }
 }
