@@ -45,7 +45,7 @@ class GException extends ExceptionHandler
                     ]
                 );
             } else {
-                fwrite(STDERR, $message . PHP_EOL);
+                file_put_contents('php://stderr', $message . PHP_EOL, FILE_APPEND);
             }
         }
 
