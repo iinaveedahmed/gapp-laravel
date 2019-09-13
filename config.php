@@ -1,4 +1,5 @@
 <?php
+
 return [
-    'secure' => env('GAPP_SECURE', 'false')
+    'secure' => env('GAPP_SECURE', false)
 ];
