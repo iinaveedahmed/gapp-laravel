@@ -23,8 +23,6 @@ class GException extends ExceptionHandler
     public function report(Exception $exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
-            $message = sprintf('PHP Notice: %s', (string)$exception);
-
             try { // try context from helper in-case helper is not loaded
                 $context = ilog()->toArray();
             } catch (Exception $exception) {
@@ -32,8 +30,10 @@ class GException extends ExceptionHandler
             }
 
             if ($logger = Bootstrap::$psrLogger) {
+                $message = sprintf('PHP Notice: %s', (string)$exception);
                 $service = $logger->getMetadataProvider()->serviceId();
                 $version = $logger->getMetadataProvider()->versionId();
+
                 $logger->error(
                     $message,
                     [
@@ -45,6 +45,7 @@ class GException extends ExceptionHandler
                     ]
                 );
             } else {
+                $message = sprintf('PHP Notice: %s', (string)$exception->getMessage());
                 file_put_contents('php://stderr', $message . PHP_EOL, FILE_APPEND);
             }
         }
