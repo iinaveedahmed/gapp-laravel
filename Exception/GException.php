@@ -29,7 +29,9 @@ class GException extends ExceptionHandler
                 $context = "Unable to get context";
             }
 
+            Bootstrap::init();
             $message = sprintf('PHP Notice: %s', (string)$exception);
+
             if ($logger = Bootstrap::$psrLogger) {
                 $service = $logger->getMetadataProvider()->serviceId();
                 $version = $logger->getMetadataProvider()->versionId();
