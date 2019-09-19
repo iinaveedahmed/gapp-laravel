@@ -50,9 +50,9 @@ class GException extends ExceptionHandler
                 $stderr = defined('STDERR') ? STDERR : fopen('php://stderr', 'w');
                 fwrite($stderr, $message . PHP_EOL);
             }
+        } else {
+            parent::report($exception);
         }
-
-        parent::report($exception);
     }
 
     /**
