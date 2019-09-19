@@ -5,7 +5,6 @@ namespace Ipaas\Gapp\Logger;
 use Closure;
 use Exception;
 use Google\Cloud\ErrorReporting\Bootstrap;
-use Google\Cloud\Logging\LoggingClient;
 use Google\Cloud\Logging\PsrLogger;
 use Monolog\Handler\PsrHandler;
 use Monolog\Logger;
@@ -18,9 +17,10 @@ class GLogger
 {
     public function __invoke(array $config)
     {
-        $logName = isset($config['logName']) ? $config['logName'] : 'app';
-        $psrLogger = LoggingClient::psrBatchLogger($logName);
+        $logName = $config['logName'] ?? 'app';
+        $psrLogger = Bootstrap::$psrLogger;
         $handler = new PsrHandler($psrLogger);
+
         $logger = new Logger(
             $logName,
             [$handler],
