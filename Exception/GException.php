@@ -23,29 +23,11 @@ class GException extends ExceptionHandler
     public function report(Exception $exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
-            try { // try context from helper in-case helper is not loaded
-                $context = ilog()->toArray();
-            } catch (Exception $exception) {
-                $context = "Unable to get context";
-            }
-
             Bootstrap::init();
             $message = sprintf('PHP Notice: %s', (string)$exception);
 
             if ($logger = Bootstrap::$psrLogger) {
-                $service = $logger->getMetadataProvider()->serviceId();
-                $version = $logger->getMetadataProvider()->versionId();
-
-                $logger->error(
-                    $message,
-                    [
-                        'serviceContext' => [
-                            'service' => $service,
-                            'version' => $version,
-                        ],
-                        'context' => $context
-                    ]
-                );
+                $logger->error($message);
             } else {
                 $stderr = defined('STDERR') ? STDERR : fopen('php://stderr', 'w');
                 fwrite($stderr, $message . PHP_EOL);
