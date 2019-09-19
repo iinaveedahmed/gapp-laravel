@@ -23,7 +23,9 @@ class GException extends ExceptionHandler
     public function report(Exception $exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
+            Bootstrap::init();
             $message = sprintf('PHP Notice: %s', (string)$exception);
+
             if ($logger = Bootstrap::$psrLogger) {
                 $logger->error($message);
             } else {
