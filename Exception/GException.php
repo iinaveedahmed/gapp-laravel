@@ -29,8 +29,10 @@ class GException extends ExceptionHandler
                 $context = "Unable to get context";
             }
 
+            Bootstrap::init();
+            $message = sprintf('PHP Notice: %s', (string)$exception);
+
             if ($logger = Bootstrap::$psrLogger) {
-                $message = sprintf('PHP Notice: %s', (string)$exception);
                 $service = $logger->getMetadataProvider()->serviceId();
                 $version = $logger->getMetadataProvider()->versionId();
 
@@ -45,8 +47,8 @@ class GException extends ExceptionHandler
                     ]
                 );
             } else {
-                $message = sprintf('PHP Notice: %s', (string)$exception->getMessage());
-                file_put_contents('php://stderr', $message . PHP_EOL, FILE_APPEND);
+                $stderr = defined('STDERR') ? STDERR : fopen('php://stderr', 'w');
+                fwrite($stderr, $message . PHP_EOL);
             }
         }
 
