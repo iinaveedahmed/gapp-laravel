@@ -27,6 +27,7 @@ class AuthAndLog
      */
     public function handle(Request $request, Closure $next)
     {
+        $request->headers->set('Accept', 'application/json');
         $this->setILogFields($request);
 
         if (config('gapp.secure') && $this->isInvalidApiKey()) {
