@@ -34,8 +34,7 @@ composer require ipaas/gapp-laravel // considering v2+
   
 Make sure that the  
  **ENV:** GAPP_SECURE is set to `true`; and  
- **ENV:** LOG_CHANNEL is set to `stack-driver`; and  
- **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
+ **ENV:** LOG_CHANNEL on gcloud environment is set to `stack-driver`;
 
 ### ii. Migration and Artisan Command
 If you are using the version 2.0 or later, you will have access to the migration and artisan command:
