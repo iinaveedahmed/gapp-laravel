@@ -9,6 +9,7 @@ use Ipaas\Exception\GException;
 use Ipaas\Exception\JsonExceptionRender;
 use Ipaas\Logger\Client;
 use Ipaas\Middleware\AuthAndLog;
+use ReflectionException;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -65,9 +66,11 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
-            return JsonExceptionRender::render($exception);
-        });
+        if (class_exists('Dingo\Api\Exception\Handler')) {
+            app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
+                return JsonExceptionRender::render($exception);
+            });
+        }
 
         $kernel = $this->app->make(Kernel::class);
         $kernel->pushMiddleware(AuthAndLog::class);
