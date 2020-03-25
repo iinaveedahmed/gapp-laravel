@@ -10,17 +10,16 @@ use Illuminate\Http\Response;
 
 class GException extends ExceptionHandler
 {
-
     /**
      * Report or log an exception.
      *
      * This is a great spot to send exceptions to Sentry, Bugsnag, etc.
      *
-     * @param  Exception $exception
+     * @param $exception
      * @return void
      * @throws Exception
      */
-    public function report(Exception $exception)
+    public function report($exception)
     {
         if (isset($_SERVER['GAE_SERVICE'])) {
             Bootstrap::init();
@@ -41,10 +40,10 @@ class GException extends ExceptionHandler
      * Render an exception into an HTTP response.
      *
      * @param  Request  $request
-     * @param  Exception  $exception
+     * @param  $exception
      * @return Response
      */
-    public function render($request, Exception $exception)
+    public function render($request, $exception)
     {
         $parentMessage = $exception->getMessage();
 
