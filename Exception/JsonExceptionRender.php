@@ -1,8 +1,10 @@
 <?php
-namespace Ipaas\Exception;
+namespace Ipaas\Gapp\Exception;
 
 use Exception;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Response;
+use Ipaas\Gapp\Response as GappResponse;
 
 class JsonExceptionRender
 {
@@ -14,9 +16,8 @@ class JsonExceptionRender
     public static function render(Exception $exception, $parentMessage = null)
     {
         $errors = null;
-
-        $message = $parentMessage ?: $exception->getMessage();
         $stack = null;
+        $message = $parentMessage ?? $exception->getMessage();
 
         if (config('app.debug')) {
             $stack = [
@@ -24,11 +25,11 @@ class JsonExceptionRender
                 'file' => $exception->getFile(),
                 'class' => get_class($exception),
                 'line' => $exception->getLine(),
-                'trace' => explode("\n", $exception->getTraceAsString()),
+                'trace' => explode(PHP_EOL, $exception->getTraceAsString()),
             ];
         }
 
-        $response = iresponse();
+        $response = new GappResponse();
         if (method_exists($exception, 'getHeaders')) {
             $response->setHeaders($exception->getHeaders() ?? []);
         }
@@ -36,9 +37,9 @@ class JsonExceptionRender
         if (method_exists($exception, 'getStatusCode')) {
             $status = $exception->getStatusCode();
         } elseif (method_exists($exception, 'getCode')) {
-            $status = $exception->getCode() > 0 ? $exception->getCode() : 500;
+            $status = $exception->getCode() > 0 ? $exception->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
         } else {
-            $status = 500;
+            $status = Response::HTTP_INTERNAL_SERVER_ERROR;
         }
 
         if ($exception instanceof ValidationException) {

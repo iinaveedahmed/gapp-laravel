@@ -1,5 +1,3 @@
-
-
 # iPaaS package for Laravel
 This package includes
 * Driver for Google stack logging
@@ -31,18 +29,21 @@ ipaas/gapp-laravel: ~1.1.0
 **OR;** by running
 
 ```bash
-composer require ipaas/gapp-laravel
-```
-
-### ii. Register Provider
-Add provider class in `config/app.php` before **Application service providers**
-```php
-Ipaas\IpaasServiceProvider::class,
+composer require ipaas/gapp-laravel // considering v2+
 ```
   
 Make sure that the  
- **ENV:** LOG_CHANNEL is set to `stackdriver`; and  
- **ENV:** GCLOUD_PROJECT is set to your `Google-Cloud-Project_Id`  
+ **ENV:** GAPP_SECURE is set to `true`; and  
+ **ENV:** LOG_CHANNEL on gcloud environment is set to `stack-driver`;
+
+### ii. Migration and Artisan Command
+If you are using the version 2.0 or later, you will have access to the migration and artisan command:
+
+```php artisan vendor:publish --tag=gapp``` command will push the middleware to the application, and furthermore using `GAPP_SECURE` set to `true`, the security will be applied.
+
+```php artisan migrate``` command will create a new `partner_apps` table in your application, which will be used to verify the `X-Api-Key` when passing the middleware `partner`.
+
+```php artisan create-partner-app {provider}``` command will create a new row in your new `partner_apps` table with a provider name as optional argument.
 
 # API  Documentation
 ## Log-info (ilog)
@@ -51,22 +52,23 @@ Helper to add context information to all log entries.
 > Once context is added to ilog it will append to all future logs entries
 > ilog refresh with each request and; have same life cycle as of request()
 
-`ilog()` is a helper method returning singleton class `IPaaS/Info/Client.php`
+`ilog()` is a helper method returning singleton class `Ipaas\Gapp\Logger\Client.php`
 To add context info just call `ilog()` and chain any method available.
 Following methods are available:
 
 
 |                 Method                     |              Usage              |
 |--------------------------------------------|---------------------------------|
-|`client (string)`                           |set client id/name               |
-|`key (string)`                              |set client key/token             |
-|`type (string)`                             |type of request                  |
-|`prop ((string)value, (string)name)`        |any custom key and value         | 
-|`date ((string|Carbon)value, (string)name)` |any custom date key and value    |
-|`dateFrom (string|Carbon)`                  |sync/request date from           |
-|`dateTo (string|Carbon)`                    |sync/request date to             |
-|`uuid (string|null)`                        |universal unique identifier      |
-|`toArray()`                                 |get all info as array            |
+|`setClientId (string)`                         |set client id/name               |
+|`setClientKey (string)`                        |set client key/token             |
+|`setRequestId (string)`                        |set request id/token             |
+|`setType (string)`                             |type of request                  |
+|`prop ((string)value, (string)name)`           |any custom key and value         | 
+|`setDate ((string⎮Carbon)value, (string)name)` |any custom date key and value    |
+|`setDateFrom (string⎮Carbon)`                  |sync/request date from           |
+|`setDateTo (string⎮Carbon)`                    |sync/request date to             |
+|`setUuid (string⎮null)`                        |universal unique identifier      |
+|`toArray()`                                    |get all info as array            |
 
 
 > `iLog([data-set])` can be use to re-init* log data. 
@@ -86,12 +88,12 @@ function validateUser(Request $request){
 	if ($user) {	
 		
 		/********LOG-INFO PROVIDER*******/
-		iLog() 			// add user details to context
-		->client($user->id) // client id to context
-		->key($user->key);  // client key to context
+		iLog()                          // add user details to context
+		->setClientId($user->id)        // client id to context
+		->setClientKey($user->key);     // client key to context
 		
 		// add request details context
-		iLog()->type('Validate user name');
+		iLog()->setType('Validate user name');
 
 		// Calling other class to resolve request
 		return ClassB::validateUserName($user);
@@ -120,28 +122,26 @@ function validateUserName(User $user){
 
 ### Validation
 By default this library try to validate request by checking headers:
-* x-api-key (set via .env)
-by default system will try to match header `x-api-key` with **ENV**`API_KEY` for validation
-_to disable remove **ENV**`API_KEY`_
-* X-Appengine-Inbound-Appid
-by default this check validate if app engine header is set (_default active on swagger_)
-_to disable set **ENV**`APP_ENGINE_ONLY=false` (default = true)_
+* X-Api-Key (set on the `partner_apps` table)
+the system will try to match the header `X-Api-Key` with the `partner_apps` table. 
+_To enable_, just add the middleware `partner` on your desirable route ```Route::get('foo', FooController@bar)->middleware('partner')```
 
 ### Logging
 By default library try to translate and log following details:
 ```php
-$request->client 					// client info
-$request->uuid						// request uuid
-$request->header('Authorization')	// auth value from header
-$request->dateFrom					// date from
-$request->dateTo					// date to
+$request->header('Authorization')       // Authorization value from header
+$request->header('X-Api-Key')           // Client ID from header
+$request->header('Gapp-Request-ID')    // Gapp Request ID from header
+$request->uuid                          // request uuid
+$request->dateFrom                      // date from
+$request->dateTo                        // date to
 ```
 
 ## Request
 Request is resolved using `Ipass/Request` controller
 to use see the given example:
 ```php
-use Ipaas\Request;
+use Ipaas\Gapp\Request;
 use Ipass\Response;
 class Accounts extends Response;  
 {
@@ -196,92 +196,33 @@ Func: requestify(string $item, mixed $value)
 Return: modified REQUEST
 ```
 
-## Exceptions
->These helper function can be call directly
-
-|                 Method                   	|                     Usage                      		|
-|-------------------------------------------|-------------------------------------------------------|
-|`iThrow(Exception, HTTP_CODE)`             |process and throw any exception with custom code		|
-|`UnauthorizedException(Exception)`			|process and throw **Unauthorized** exception (401)		|
-|`BadRequestException(Exception)`			|process and throw **Bad Request** exception (400)		|
-|`TooManyRequestException(Exception)`		|process and throw **Too Many Request** exception (429)	|
-|`NotFoundException(Exception)`				|process and throw **Not Found** exception (429)		|
-|`InternalServerException(Exception)`		|process and throw **Internal Server** exception (429)	|
-
-**Example**
-Following exception with 
-```php
-/* ------ Class C ------- */
-
-/**
-* Validate information
-* @param MetaData $metaData 'A laravel model'
-* @return boolean
-* @throws Exception
-*/
-function validateMetaData(MetaData $metaData){
-	
-	iLog()
-	->data($info) // add complete model to context
-	->type('simple meta validation') // add type context
-
-	if ($metaData->method == 'advance'){
-		// context override
-		iLog()->type('advance meta validation');
-	}
-	
-	// lets log event info
-	Log::info('Validating meta data');
-	
-	// validating
-	try {
-		return CronClient::get($metaData);
-	} catch (Exception $e) {
-	
-		// check if error is too many request
-		if($e->getCode === 433) {
-			TooManyRequestException($e); // will throw with code 429
-		} else {
-			InternalServerException($e); // will throw with code 500
-		}
-	}
-}
-```
 ## Response
 > Response helper `iresponse`
-or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.php` 
+or use by extending base controller `[YOUR CONTROLLER] extends Ipaas/Response.php`, with that helper you can access sendError() method too, making an exception easier.
 
 **Set Meta**
 Chain-able function to set response meta data
 ```php
-return $this->meta(['client-id'=>'unknown'])->sendResponse($data);
+return $this->meta(['client_id' => 'unknown'])->sendResponse($data);
 ```
 
 **Set header**
 Chain-able function to set response header data
 ```php
-return $this->header(['content-type'=>'application/json'])->sendResponse($data);
-```
-
-**AllErrors** 
-* `errorValidation()`
-* `errorUnauthorized()`
-* `errorBadRequest()`
-* `errorTooManyRequest()`
-* `errorNotFound()`
-* `errorNotImplemented()`
-* `errorInternalServer()`
-* Main: `sendError()`
-```php
-return $this->errorNotImplemented();
+return $this->header(['content-type' => 'application/json'])->sendResponse($data);
 ```
 
 ## Other Helpers
 ### Converter
-> Ipaas/Helper/Converter
+> Ipaas/Helper/Converter-Helpers
 
 **Normalized Name**
 Replace ASCII space unicode with ` ` space.
+
+Input: ```te \n sting```
+
+Response: ```te sting```
+
 ```php
 // $name is unicode string
 Func: normalizedName(string $name)
@@ -290,6 +231,12 @@ Return: normalized string
 ```
 **Boolify List**
 Convert given string 'true/false' parameter to php boolean in provided array.
+
+Input: ```['true', 'false', 'TRUE', 'FALSE', true, false, TRUE, FALSE, 0, 1, '0', '1', '', ' test']```
+
+Response:
+```[true, false, true, false, true, false, true, false, false, true, false, true, false, true]```
+
 ```php
 // $list is haystack array
 // $item is needle name
@@ -300,3 +247,31 @@ Return: modified list
 
 ## Note
 _ps. google/cloud package is required to run application on google app engine flex environment_
+
+## Troubleshooting - Upgrade v1.* to v2.*
+- `ilog()->data()` was changed to `ilog()->appendData()`;
+- `iresponse()` method was removed, use `Ipaas\Gapp\Response()` instead;
+- you do not need to instance the provider `Ipaas\IpaasServiceProvider::class` anymore, it is now automatically injected by composer;
+- `stackdriver` logging channel was changed to `stack-driver`
+- all the `ilog()` setters were changed too:
+    - client is now setClientId;
+    - key is now setClientKey;
+    - type is now setType;
+    - dateFrom is now setDateFrom;
+    - dateTo is now setDateTo;
+    - uuid is now setUuid;
+- all the exception helpers were removed:
+    - iThrow;
+    - UnauthorizedException;
+    - BadRequestException;
+    - TooManyRequestException;
+    - NotFoundException;
+    - InternalServerException;
+- all the response helpers were removed:
+    - errorValidation;
+    - errorUnauthorized;
+    - errorBadRequest;
+    - errorTooManyRequest;
+    - errorNotFound;
+    - errorNotImplemented;
+    - errorInternalServer;
