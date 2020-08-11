@@ -10,6 +10,7 @@ use Ipaas\Gapp\Exception\GException;
 use Ipaas\Gapp\Exception\JsonExceptionRender;
 use Ipaas\Gapp\Logger\Client;
 use Ipaas\Gapp\Middleware\AuthAndLog;
+use ReflectionException;
 
 class IpaasServiceProvider extends ServiceProvider
 {
@@ -63,20 +64,18 @@ class IpaasServiceProvider extends ServiceProvider
         /**
          * Register dingo handlers
          */
-        $this->app->bind(
-            'Dingo\Api\Exception\Handler',
-            function (Exception $exception) {
+        if (class_exists('Dingo\Api\Exception\Handler')) {
+            app('Dingo\Api\Exception\Handler')->register(function (Exception $exception) {
                 return JsonExceptionRender::render($exception);
-            }
-        );
-
-        /**
-         * Append middleware
-         */
+            });
+        }
 
         /** @var Router $router */
         $router = app('router');
 
+        /**
+        * Append middleware
+        */
         $router->aliasMiddleware('partner', AuthAndLog::class);
         $router->pushMiddlewareToGroup('api', AuthAndLog::class);
     }
