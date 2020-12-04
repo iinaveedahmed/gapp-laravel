@@ -9,11 +9,11 @@ use Ipaas\Gapp\Response as GappResponse;
 class JsonExceptionRender
 {
     /**
-     * @param Exception $exception
+     * @param Throwable $exception
      * @param null $parentMessage
      * @return mixed
      */
-    public static function render(Exception $exception, $parentMessage = null)
+    public static function render(Throwable $exception, $parentMessage = null)
     {
         $errors = null;
         $stack = null;
