@@ -1,10 +1,10 @@
 <?php
 namespace Ipaas\Gapp\Exception;
 
-use Exception;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\Response;
 use Ipaas\Gapp\Response as GappResponse;
+use Throwable;
 
 class JsonExceptionRender
 {
