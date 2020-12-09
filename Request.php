@@ -117,7 +117,7 @@ class Request extends BaseRequest
         $validator = Validator::make($list, $rules);
 
         if ($validator->fails()) {
-            throw new ValidationException($validator, 'Invalid request', Response::HTTP_UNPROCESSABLE_ENTITY);
+            throw new ValidationException($validator, new Response('Invalid request', Response::HTTP_UNPROCESSABLE_ENTITY));
         }
 
         return $this;
