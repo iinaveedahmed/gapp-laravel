@@ -1,3 +1,7 @@
+# ⚠️ NOTICE: This package is no longer maintained and is outdated
+
+This package is deprecated and no longer receives updates or support. Please consider using alternative solutions for Google App Engine integration with Laravel.
+
 # iPaaS package for Laravel
 This package includes
 * Driver for Google stack logging

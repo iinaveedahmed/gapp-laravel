@@ -2,7 +2,7 @@
   "name": "ipaas/gapp-laravel",
   "type": "library",
   "license": "CC-BY-NC-ND-4.0",
-  "description": "IPaaS package for laravel provides php support for google app-engine logging and handling",
+  "description": "[DEPRECATED] IPaaS package for laravel provides php support for google app-engine logging and handling - This package is no longer maintained",
   "homepage": "https://5andhalf.com/",
   "minimum-stability": "dev",
   "prefer-stable": true,
